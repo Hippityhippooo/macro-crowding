@@ -31,3 +31,14 @@ measured limitation (see events-by-firm-status numbers below), not a solved one.
 hypothesis test.
 
 - Events 2005+ by firm status (Sharadar free ticker master): listed now 208,988; delisted 206,088; no map 39,... (see output/gate.md); crowded_session mean 15.9% listed vs 14.6% delisted.
+
+## 2026-10-30, data-quality rules for Yahoo prices (set before the first H1 regression on real data)
+
+First real panel (733 tickers, partial download) showed: 187 tickers with daily |return| > 100% (OTC
+bankruptcy symbols ending in Q, relistings) and ticker reuse (Yahoo's PARA history is not the old
+Paramount Global). Rules, applied in run.py returns stage:
+1. Exchange must be NYSE, NASDAQ or NYSEMKT in the Sharadar ticker master (OTC excluded).
+2. Any ticker with a daily |return| > 100% after 2004 is dropped whole.
+3. CARs winsorised at the 1st/99th percentile within the panel; raw CARs kept as *_raw and reported in a
+   robustness line. Ticker reuse cannot be detected without a second price source; it is a stated limitation.
+No hypothesis test on real data has been run before this entry.

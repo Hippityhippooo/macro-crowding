@@ -94,8 +94,17 @@ def stage_returns(args):
     m = ev.merge(req[["cik", "ticker", "firstpricedate", "lastpricedate", "isdelisted"]], on="cik", how="inner")
     m = m[(m["event_date"] >= m["firstpricedate"] - pd.Timedelta(days=5)) & (m["event_date"] <= m["lastpricedate"])]
     m = m.sort_values(["cik", "event_date", "isdelisted"]).drop_duplicates(["cik", "event_date"], keep="first")
+    bridge = pd.read_csv("/home/claude/data_in/prices/sharadar_sec_cik_bridge_snapshot.csv", low_memory=False) if Path("/home/claude/data_in/prices/sharadar_sec_cik_bridge_snapshot.csv").exists() else None
+    if bridge is not None:
+        ok_ex = set(bridge.loc[bridge["exchange"].isin(["NYSE", "NASDAQ", "NYSEMKT"]), "ticker"])
+        m = m[m["ticker"].isin(ok_ex)]
     px = rtn.load_prices_parquet(RAW / "prices_yf_all.parquet", tickers=set(m["ticker"]))
+    # data-quality rule (CHANGELOG 2026-10-30): a ticker with any daily |return| > 100% after 2004 is treated
+    # as corrupt (OTC relistings, ticker reuse) and dropped whole
+    bad = set(px.loc[(px["date"] >= "2004-01-01") & (px["ret"].abs() > 1.0), "ticker"])
+    px = px[~px["ticker"].isin(bad)]
     have = set(px["ticker"])
+    print(f"tickers dropped for |ret|>100%: {len(bad)}; exchange filter applied: {bridge is not None}")
     m = m[m["ticker"].isin(have)]
     print(f"events 2005+: {len(ev)}; with a ticker in window: {len(m)}; tickers with prices: {len(have)}")
     stats = rtn.event_window_stats(px, factors, m)
@@ -103,6 +112,11 @@ def stage_returns(args):
     panel = panel.drop_duplicates(["cik", "reaction_day"])
     print(f"panel before filters: {len(panel)}")
     panel = panel[panel["price_m2"] >= 5]
+    # winsorise CARs at 1%/99% within the panel (data-quality rule, CHANGELOG 2026-10-30); raw kept as *_raw
+    for c in ["car_0_1", "car_2_20", "car_2_60"]:
+        panel[c + "_raw"] = panel[c]
+        lo_, hi_ = panel[c].quantile([0.01, 0.99])
+        panel[c] = panel[c].clip(lo_, hi_)
     panel["market_surprise"] = panel["car_0_1"]
     panel["yq"] = pd.to_datetime(panel["reaction_day"]).dt.to_period("Q").astype(str)
     panel["surprise_rank"] = sur.decile_rank(panel["market_surprise"], panel["yq"])
