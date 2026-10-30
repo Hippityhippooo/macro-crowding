@@ -5,3 +5,7 @@ __pycache__/
 .pytest_cache/
 *.pyc
 .DS_Store
+carousel/out/
+carousel/figs/car_paths.png
+carousel/figs/coef.png
+carousel/figs/placebo.png
