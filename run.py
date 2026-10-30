@@ -142,7 +142,45 @@ def stage_tests(args):
     print("\n".join(lines))
 
 
-STAGES = {"events": stage_events, "gate": stage_gate, "surprise": stage_surprise,
+def stage_h2(args):
+    """H2 needs no prices: run on events_with_sue with the session-based crowding dummy."""
+    ev = pd.read_parquet(PROC / "events_with_sue.parquet")
+    lo, hi = DEV if args.sample == "dev" else HOLDOUT
+    if args.sample == "holdout" and not _git_committed(OUT / "results_h2_dev.md"):
+        sys.exit("Refusing to run the holdout: commit output/results_h2_dev.md first.")
+    ev = ev[(ev["event_date"] >= lo) & (ev["event_date"] <= hi)].copy()
+    ev = ev.sort_values(["cik", "event_date"])
+    ev["doq"] = (ev["event_date"] - ev["q_end"]).dt.days
+    ev["discretion"] = ev.groupby("cik")["doq"].transform(lambda s: s.shift(1).rolling(12, min_periods=6).std())
+    ev["sue_w"] = ev["sue"].clip(-10, 10)
+    ev["same_day_n"] = cal.same_day_event_count(ev)
+    ev["season"] = cal.season_intensity(ev)
+    ev["dow"] = pd.to_datetime(ev["reaction_day"]).dt.dayofweek
+    ev = pd.get_dummies(ev, columns=["dow"], prefix="dow", drop_first=True, dtype=float)
+    controls = ["same_day_n", "season"] + [c for c in ev.columns if c.startswith("dow_")]
+    d = ev.dropna(subset=["sue_w", "crowded_session"])
+    lines = [f"# H2 results ({args.sample} sample {lo.date()}..{hi.date()})", "",
+             f"N with SUE and session class = {len(d)}; crowded_session N = {int(d['crowded_session'].sum())}",
+             f"Raw means: SUE crowded {d.loc[d.crowded_session==1,'sue_w'].mean():.4f} vs uncrowded {d.loc[d.crowded_session==0,'sue_w'].mean():.4f}; "
+             f"share SUE<0 crowded {(d.loc[d.crowded_session==1,'sue_w']<0).mean():.4f} vs {(d.loc[d.crowded_session==0,'sue_w']<0).mean():.4f}", ""]
+    b, se, t, n = inf.h2_regression(d, surprise_col="sue_w", discretion_col=None, controls=controls)
+    lines.append(f"H2 primary (SUE on crowded, firm+yq FE, 2-way cluster): b={b['crowded_session']:.4f} se={se['crowded_session']:.4f} t={t['crowded_session']:.2f} n={n}")
+    dd = d.dropna(subset=["discretion"])
+    b, se, t, n = inf.h2_regression(dd, surprise_col="sue_w", discretion_col="discretion", controls=controls)
+    lines.append(f"H2 interaction (crowded x discretion): b_crowded={b['crowded_session']:.4f} (t={t['crowded_session']:.2f}); b_cxd={b['cxd']:.5f} (t={t['cxd']:.2f}); n={n}")
+    d["neg"] = (d["sue_w"] < 0).astype(float)
+    b, se, t, n = inf.h2_regression(d, surprise_col="neg", discretion_col=None, controls=controls)
+    lines.append(f"H2 secondary (P[SUE<0] on crowded, LPM): b={b['crowded_session']:.4f} se={se['crowded_session']:.4f} t={t['crowded_session']:.2f} n={n}")
+    for r in ["crowded_cpi", "crowded_empsit", "crowded_fomc"]:
+        dr = d.copy(); dr["crowded_session"] = dr[r].astype(float)
+        b, se, t, n = inf.h2_regression(dr, surprise_col="sue_w", discretion_col=None, controls=controls)
+        lines.append(f"H2 by release {r} (calendar-day dummy): b={b['crowded_session']:.4f} t={t['crowded_session']:.2f}")
+    OUT.mkdir(exist_ok=True)
+    (OUT / f"results_h2_{args.sample}.md").write_text("\n".join(lines))
+    print("\n".join(lines))
+
+
+STAGES = {"events": stage_events, "h2": stage_h2, "gate": stage_gate, "surprise": stage_surprise,
           "returns": stage_returns, "tests": stage_tests}
 
 if __name__ == "__main__":

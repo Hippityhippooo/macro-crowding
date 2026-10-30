@@ -19,3 +19,15 @@ before the first regression on the development sample.
 - Surprise stage: 277,144 point-in-time quarters (11.9% derived Q4); SUE non-null for 73% of quarters and for 64-86% of events from 2013. Apple Q4 FY2024 derived diluted EPS 0.97 matches the reported GAAP figure. Quarter-to-event gap: median 34 days, 95th pct 65.
 - BLOCKER: no price data. Package contains only the Sharadar AAPL demo. H1 (returns) cannot run until Sharadar Prices Full History is downloaded.
 - Thresholds in PREREGISTRATION.md remain [PROPOSED]; no hypothesis test has been run.
+
+## 2026-10-30, thresholds promoted
+
+Faldo delegated all non-payment decisions ("everything else is up to you"). On that authority the [PROPOSED]
+defaults in PREREGISTRATION.md are promoted unchanged: $5 price filter on day -2; windows [0,+1], [+2,+20],
+[+2,+60]; estimation window [-250,-21], minimum 120 obs; SUE lookback 8 quarters, minimum 4; development
+2005-2015, holdout 2016-2025; 500-event minimum per crowded extreme decile; 1,000 placebo draws; 2% position
+cap; Newey-West lag 5. Price source changed from Sharadar to Yahoo Finance (free): survivorship is now a
+measured limitation (see events-by-firm-status numbers below), not a solved one. This entry precedes any
+hypothesis test.
+
+- Events 2005+ by firm status (Sharadar free ticker master): listed now 208,988; delisted 206,088; no map 39,... (see output/gate.md); crowded_session mean 15.9% listed vs 14.6% delisted.
