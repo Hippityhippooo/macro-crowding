@@ -1,41 +1,114 @@
 [
-  {"type": "cover", "kicker": "Earnings season meets the macro calendar",
-   "title": "When CPI and earnings land in the same session, who reads the 10-Q?",
-   "sub": "I built every US earnings 8-K since 2005 from EDGAR, timed each one to the second, and tested whether the macro calendar changes how the market reads them.",
-   "chips": ["421,885 announcements", "2005–2026", "12,985 firms", "pre-registered"],
-   "name": "Faldo Lyon · November 2026"},
-  {"type": "figure", "kicker": "The scene", "title": "The Fed meets in the middle of earnings season",
-   "img": "calendar.png",
-   "paras": ["FOMC statement days carry 126 earnings 8-Ks on average against 72 on an ordinary day. One announcement in seven shares its session with CPI, the jobs report or the Fed."]},
-  {"type": "steps", "kicker": "Method", "title": "How the test was built",
-   "steps": ["Every 8-K with Item 2.02 from EDGAR; event date is the period of report, time of day from the acceptance stamp.",
-             "Crowded means the release lands in the same trading session as CPI, payrolls or the FOMC statement.",
-             "Surprise two ways: first-filed GAAP EPS against the same quarter a year earlier, and the two-day market reaction.",
-             "Drift over 60 days against FF5 plus momentum, with firm and quarter fixed effects and errors clustered by firm and day.",
-             "Hypotheses and thresholds committed before any return was downloaded; 2016–2025 held out and run once."]},
-  {"type": "figure", "kicker": "Finding 1", "title": "PLACEHOLDER H1 headline", "img": "car_paths.png",
-   "paras": ["PLACEHOLDER from RESULTS.md"]},
-  {"type": "figure", "kicker": "Finding 1, the test", "title": "PLACEHOLDER coefficient headline", "img": "coef.png",
-   "paras": ["PLACEHOLDER from RESULTS.md"]},
-  {"type": "figure", "kicker": "Finding 2", "title": "Bad quarters are not hidden behind the Fed",
-   "img": "h2.png",
-   "paras": ["The share of announcements with EPS below last year is the same on crowded and uncrowded sessions in both samples. The regression coefficient is 0.00 (development) and 0.02 (holdout) SUE units, neither distinguishable from zero."]},
-  {"type": "figure", "kicker": "Placebo", "title": "PLACEHOLDER placebo headline", "img": "placebo.png",
-   "paras": ["PLACEHOLDER from RESULTS.md"]},
-  {"type": "figure", "kicker": "What changed over 20 years", "title": "Filing on the day went from 57% to 89%",
-   "img": "sameday.png",
-   "paras": ["Only 8-Ks filed on the release day carry a usable time of day. 24% of events have none and are excluded from the session test; the share falls every year."]},
-  {"type": "list", "kicker": "What limits it", "title": "Read these before the headline",
-   "items": ["Prices are from Yahoo Finance: half of the events belong to firms since delisted and most of those have no price history. Their crowded share was 14.6% against 15.9% for survivors, so the gap is weakly related to the treatment, and the limits are stated, not solved.",
-             "GAAP EPS against last year is not the number analysts trade; consensus data is paid. The market-based surprise runs alongside it.",
-             "PLACEHOLDER MDE sentence from RESULTS.md.",
-             "48 BLS release dates sit in pairs with a revision date; both count as crowded in the primary test and both are dropped in a robustness run."]},
-  {"type": "text", "kicker": "Verdict", "title": "PLACEHOLDER verdict",
-   "paras": ["PLACEHOLDER my read, marked as mine.", "What would change it: PLACEHOLDER.", "Code, data build and pre-registration on GitHub; link in the first comment."]},
-  {"type": "list", "kicker": "Sources and checks", "title": "Where every number comes from",
-   "items": ["SEC EDGAR submissions and companyfacts (via dated mirrors, four filings checked against live index pages).",
-             "FOMC dates: federalreserve.gov; CPI and Employment Situation dates: ALFRED, St. Louis Fed.",
-             "Factors: Kenneth French data library, daily FF5 and momentum, September 2026 vintage.",
-             "Prices: Yahoo Finance, listed names; delisted coverage measured and reported.",
-             "17 unit tests on synthetic EDGAR fixtures; holdout gated behind a committed development result."]}
+ {
+  "type": "cover",
+  "kicker": "Earnings season meets the macro calendar",
+  "title": "When CPI and earnings land in the same session, who reads the 10-Q?",
+  "sub": "I timed every US earnings 8-K since 2005 to the second and tested whether the macro calendar changes how the market reads them.",
+  "chips": [
+   "421,885 announcements",
+   "2005–2025",
+   "pre-registered",
+   "holdout run once"
+  ],
+  "name": "Faldo Lyon · November 2026"
+ },
+ {
+  "type": "figure",
+  "kicker": "The scene",
+  "title": "The Fed meets in the middle of earnings season",
+  "img": "calendar.png",
+  "paras": [
+   "FOMC statement days carry 126 earnings 8-Ks on average against 72 on an ordinary day. One announcement in seven shares its session with CPI, the jobs report or the Fed."
+  ]
+ },
+ {
+  "type": "steps",
+  "kicker": "Method",
+  "title": "How the test was built",
+  "steps": [
+   "Every 8-K with Item 2.02 from EDGAR; time of day from the acceptance stamp.",
+   "Crowded: the news first trades in the same session as CPI, payrolls or the FOMC statement.",
+   "Surprise two ways: first-filed GAAP EPS against last year, and the two-day market reaction.",
+   "60-day drift against FF5 plus momentum; firm and quarter fixed effects; two-way clustered errors.",
+   "Thresholds committed first; 2016–2025 held out and run once."
+  ]
+ },
+ {
+  "type": "figure",
+  "kicker": "Finding 1",
+  "title": "Crowded-session earnings drift like any other",
+  "img": "car_paths.png",
+  "paras": [
+   "After the two-day reaction, the top-minus-bottom surprise book drifts 1.11 percentage points on crowded sessions and 1.48 on quiet ones over 60 days. 26,531 extreme-decile events, 2005–2025."
+  ]
+ },
+ {
+  "type": "figure",
+  "kicker": "Finding 1, the test",
+  "title": "The development sample said less drift. The holdout said no.",
+  "img": "coef.png",
+  "paras": [
+   "2005–2015: −1.48 pp extra drift, top versus bottom surprise decile, on crowded sessions (t −2.1), all of it on FOMC days. 2016–2025, run once: +0.75 pp (t 1.1), FOMC days +0.06. What replicates is zero."
+  ]
+ },
+ {
+  "type": "figure",
+  "kicker": "Placebo",
+  "title": "Random calendars give the same answer",
+  "img": "placebo.png",
+  "paras": [
+   "Redrawing the macro days at random 1,000 times gives a null spread of 0.73 pp. The holdout estimate sits inside it: 30% of random calendars produce a larger coefficient."
+  ]
+ },
+ {
+  "type": "figure",
+  "kicker": "Finding 2",
+  "title": "Bad quarters are not hidden behind the Fed",
+  "img": "h2.png",
+  "paras": [
+   "The share of announcements with EPS below last year is the same on crowded and quiet sessions in both samples. Regression coefficients 0.00 and 0.02 SUE units, neither distinguishable from zero."
+  ]
+ },
+ {
+  "type": "figure",
+  "kicker": "What changed over 20 years",
+  "title": "Filing on the day went from 57% to 89%",
+  "img": "sameday.png",
+  "paras": [
+   "Only 8-Ks filed on the release day carry a usable time of day. 24% of events have none and sit outside the session test; the share falls every year."
+  ]
+ },
+ {
+  "type": "list",
+  "kicker": "What limits it",
+  "title": "Read these before the headline",
+  "items": [
+   "Prices are from Yahoo Finance. Delisted firms are mostly missing; their crowded share was 14.6% against 15.9% for survivors.",
+   "GAAP EPS against last year is not the consensus number analysts trade.",
+   "Holdout standard error 0.66 pp, so effects under about 1.3 pp (top versus bottom decile) are not ruled out.",
+   "737 tickers with a daily move over 100% dropped whole; 48 BLS dates pair with a revision date."
+  ]
+ },
+ {
+  "type": "text",
+  "kicker": "Verdict",
+  "title": "Attention is not the scarce thing on Fed day",
+  "paras": [
+   "My read: the market absorbs an earnings release on a CPI, jobs or FOMC session about as fully as on a quiet one, and firms do not use those sessions to bury weak quarters.",
+   "What would change it: a consensus-based surprise, or delisted-firm prices, showing a gap this data cannot see.",
+   "Code and pre-registration on GitHub; link in the first comment."
+  ]
+ },
+ {
+  "type": "list",
+  "kicker": "Sources and checks",
+  "title": "Where every number comes from",
+  "items": [
+   "SEC EDGAR submissions and companyfacts via dated mirrors; four filings checked against live index pages.",
+   "FOMC dates: federalreserve.gov. CPI and jobs dates: ALFRED, St. Louis Fed.",
+   "Factors: Kenneth French library, daily FF5 and momentum, September 2026 vintage.",
+   "Prices: Yahoo Finance, listed names; delisted coverage measured and reported.",
+   "17 unit tests on synthetic EDGAR fixtures; holdout gated behind a committed development result."
+  ]
+ }
 ]

@@ -36,6 +36,7 @@ h2{font-family:Fraunces,serif;font-weight:600;font-size:64px;line-height:1.08;ma
 .lead{font-size:40px;line-height:1.3;color:var(--ink);margin-bottom:28px}
 .lead i{font-family:Fraunces,serif;font-style:italic}
 p.body{font-size:38px;line-height:1.32;margin-bottom:22px}
+.slide.roomy p.body{font-size:44px;line-height:1.34;margin-bottom:34px}
 .muted{color:var(--grey)}
 .chips{display:flex;flex-wrap:wrap;gap:14px;margin:24px 0 0}
 .chip{font-family:'JetBrains Mono',monospace;font-size:26px;padding:12px 20px;border:2px solid var(--line);border-radius:999px;color:var(--ink)}
@@ -47,7 +48,7 @@ ol{list-style:none;counter-reset:n;margin-top:8px}
 ol li{counter-increment:n;font-size:38px;line-height:1.32;padding-left:84px;position:relative;margin-bottom:26px}
 ol li::before{content:counter(n);position:absolute;left:0;top:2px;font-family:'JetBrains Mono',monospace;font-size:34px;color:var(--accent);font-weight:600}
 ul.plain{list-style:none}
-ul.plain li{font-size:36px;line-height:1.32;margin-bottom:18px;padding-left:40px;position:relative}
+ul.plain li{font-size:40px;line-height:1.34;margin-bottom:30px;padding-left:40px;position:relative}
 ul.plain li::before{content:'\\2022';position:absolute;left:0;color:var(--grey)}
 .fig{flex:1;display:flex;align-items:center;justify-content:center;margin:12px 0 20px}
 .fig img{max-width:888px;max-height:720px}
@@ -89,7 +90,7 @@ def html_for(slide: dict, n: int, N: int) -> str:
         body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><ul class="plain">{items}</ul>'
     foot = f'<div class="foot"><span>{slide.get("foot","")}</span></div>' if slide.get("foot") else ""
     page = f'<div class="page">{n} / {N}</div>' if t != "cover" else ""
-    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS % {'fonts': Path.home() / 'fonts'}}</style></head><body><div class='slide'>{page}{body}{foot}</div></body></html>"
+    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS % {'fonts': Path.home() / 'fonts'}}</style></head><body><div class='slide{" roomy" if t == "text" else ""}'>{page}{body}{foot}</div></body></html>"
 
 
 def main():

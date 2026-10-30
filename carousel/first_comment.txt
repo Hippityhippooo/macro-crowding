@@ -1,0 +1,5 @@
+Full write-up, code, data build and the pre-registration are here: [REPO URL]. The pre-registration commit is [HASH]; the development result was committed before the holdout ran.
+
+The caveat a sceptic should check first: prices are from Yahoo Finance, so firms since delisted are mostly missing (94 of 6,274 covered). Their crowded-session share was 14.6% against 15.9% for survivors, so the gap is small but it is there.
+
+Method: events from EDGAR submissions with time of day from the acceptance stamp; crowding defined by trading session, not calendar day; two surprise measures (first-filed GAAP EPS vs last year, and the two-day market reaction); FF5 plus momentum abnormal returns; firm and year-quarter fixed effects with errors clustered by firm and reaction day; 1,000 random-calendar placebos; calendar-time long-short portfolios net of Corwin-Schultz spreads; 17 unit tests on synthetic EDGAR fixtures. Code drafted with AI assistance, reviewed and run by me.
