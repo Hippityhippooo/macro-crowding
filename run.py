@@ -34,7 +34,8 @@ HOLDOUT = (pd.Timestamp("2016-01-01"), pd.Timestamp("2025-12-31"))
 
 
 def stage_events(args):
-    filings = evm.read_submissions_zip(RAW / "submissions.zip")
+    mirror = RAW / "item202_filings.parquet"
+    filings = evm.read_mirror_parquet(mirror) if mirror.exists() else evm.read_submissions_zip(RAW / "submissions.zip")
     ev = evm.build_event_table(filings)
     PROC.mkdir(parents=True, exist_ok=True)
     ev.to_parquet(PROC / "events.parquet")
@@ -68,7 +69,8 @@ def stage_gate(args):
 
 
 def stage_surprise(args):
-    facts = sur.read_companyfacts_zip(RAW / "companyfacts.zip")
+    mirror = RAW / "eps_facts.parquet"
+    facts = sur.read_mirror_eps(mirror) if mirror.exists() else sur.read_companyfacts_zip(RAW / "companyfacts.zip")
     q = sur.sue(sur.first_filed_quarters(facts))
     q.to_parquet(PROC / "quarters.parquet")
     ev = pd.read_parquet(PROC / "events_crowded.parquet")

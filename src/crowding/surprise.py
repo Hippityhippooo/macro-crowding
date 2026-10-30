@@ -59,6 +59,21 @@ def read_companyfacts_zip(path: str | Path) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
+def read_mirror_eps(path: str | Path, tag: str = TAG) -> pd.DataFrame:
+    """Alternative input: Parquet extract of the DenyTranDFW companyfacts mirror with columns
+    source_folder (CIK##########_NAME), item, unit_type, start, end, val_dec, accn, fy, fp,
+    form, filed, frame. Keeps USD/shares facts for `tag` and returns the companyconcept shape."""
+    df = pd.read_parquet(path)
+    df = df[(df["item"] == tag) & (df["unit_type"] == UNIT)].copy()
+    df["cik"] = df["source_folder"].str[3:13].astype(int)
+    df["val"] = df["val_dec"].astype(float)
+    df["start"] = pd.to_datetime(df["start"], errors="coerce")
+    df["end"] = pd.to_datetime(df["end"], errors="coerce")
+    df["filed"] = pd.to_datetime(df["filed"], errors="coerce")
+    df["span"] = (df["end"] - df["start"]).dt.days
+    return df[["cik", "start", "end", "val", "accn", "fy", "fp", "form", "filed", "frame", "span"]].dropna(subset=["start", "end", "filed"]).reset_index(drop=True)
+
+
 def first_filed_quarters(facts: pd.DataFrame) -> pd.DataFrame:
     """Point-in-time quarterly EPS: for each (cik, start, end) with a ~3-month span, keep the
     record with the earliest filed date. Then derive Q4 for fiscal years where the three

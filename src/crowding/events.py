@@ -37,6 +37,11 @@ def parse_acceptance_et(value: str) -> datetime | None:
     """
     if value is None or value == "" or (isinstance(value, float) and np.isnan(value)):
         return None
+    if isinstance(value, (datetime, pd.Timestamp)):
+        if pd.isna(value):
+            return None
+        dt = pd.Timestamp(value).to_pydatetime()
+        return dt.replace(tzinfo=ET) if dt.tzinfo is None else dt.astimezone(ET)
     s = str(value).strip()
     if s.endswith("Z"):
         dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
@@ -104,6 +109,18 @@ def read_submissions_zip(path: str | Path, forms=("8-K",)) -> pd.DataFrame:
     if not frames:
         return pd.DataFrame(columns=COLS + ["cik"])
     return pd.concat(frames, ignore_index=True)
+
+
+def read_mirror_parquet(path: str | Path, forms=("8-K",)) -> pd.DataFrame:
+    """Alternative input: a Parquet extract of the Gow sec_submissions_data mirror (same
+    columns as the SEC arrays plus timestamp_provenance / timestamp_interpretation).
+    filingDate/reportDate arrive as dates and acceptanceDateTime as a UTC instant."""
+    df = pd.read_parquet(path)
+    df = df[df["form"].isin(forms) & df["items"].map(_is_202)].copy()
+    for c in ("filingDate", "reportDate"):
+        df[c] = pd.to_datetime(df[c]).dt.strftime("%Y-%m-%d")
+    df["cik"] = df["cik"].astype(int)
+    return df.reset_index(drop=True)
 
 
 def build_event_table(filings: pd.DataFrame) -> pd.DataFrame:
