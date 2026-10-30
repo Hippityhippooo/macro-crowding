@@ -56,6 +56,23 @@ def load_french_daily(ff5_csv: str | Path, mom_csv: str | Path) -> pd.DataFrame:
     return f.set_index("date").sort_index()
 
 
+def load_factors_decimal_csv(path: str | Path) -> pd.DataFrame:
+    """Loader for a pre-merged decimal file: date,mkt_rf,smb,hml,rmw,cma,rf,umd."""
+    f = pd.read_csv(path, parse_dates=["date"]).rename(columns={"mkt_rf": "mktrf"})
+    return f.set_index("date").sort_index()[FACTOR_COLS + ["rf"]]
+
+
+def load_prices_parquet(path: str | Path, tickers: set[str] | None = None) -> pd.DataFrame:
+    """yfinance output from scripts/fetch_prices_yfinance.py: ticker,date,open,high,low,close,closeadj,volume."""
+    px = pd.read_parquet(path)
+    if tickers is not None:
+        px = px[px["ticker"].isin(tickers)]
+    px["date"] = pd.to_datetime(px["date"]).dt.tz_localize(None).dt.normalize()
+    px = px.dropna(subset=["close"]).sort_values(["ticker", "date"]).drop_duplicates(["ticker", "date"])
+    px["ret"] = px.groupby("ticker")["closeadj"].pct_change()
+    return px.reset_index(drop=True)
+
+
 def trading_days(factors: pd.DataFrame) -> pd.DatetimeIndex:
     return pd.DatetimeIndex(factors.index)
 

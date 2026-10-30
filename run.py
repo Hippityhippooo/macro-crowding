@@ -81,28 +81,39 @@ def stage_surprise(args):
 
 def stage_returns(args):
     ev = pd.read_parquet(PROC / "events_with_sue.parquet")
-    tk = pd.read_csv(RAW / "SHARADAR_TICKERS.csv")
-    tk["cik"] = tk["secfilings"].map(rtn.parse_cik_from_url) if "secfilings" in tk else np.nan
-    tk = tk.dropna(subset=["cik"]).astype({"cik": int})
-    tk = tk[tk["table"].eq("SEP") & tk["category"].str.contains("Domestic", na=False)] if "table" in tk else tk
-    ev = ev.merge(tk[["cik", "ticker"]].drop_duplicates("cik"), on="cik", how="inner")
-    factors = rtn.load_french_daily(RAW / "ff5_daily.csv", RAW / "mom_daily.csv")
+    ev = ev[ev["event_date"] >= "2005-01-01"].copy()
+    factors = rtn.load_factors_decimal_csv(RAW / "ff5_umd_daily_full_decimal.csv")
     factors.to_parquet(PROC / "factors.parquet")
-    px = rtn.load_sep(RAW / "SHARADAR_SEP.csv", tickers=set(ev["ticker"]))
-    ev = evm.assign_reaction_day(ev, pd.DatetimeIndex(factors.index))
-    stats = rtn.event_window_stats(px, factors, ev)
-    panel = ev.merge(stats, on=["cik", "ticker", "reaction_day"], how="inner")
+    td = pd.DatetimeIndex(factors.index)
+    # reaction day on the real trading calendar, then crowding flags again on that day
+    ev = ev.drop(columns=[c for c in ev.columns if c.startswith("crowded_") or c in ("macro_releases", "reaction_day", "reaction_day_is_fallback")])
+    ev = evm.assign_reaction_day(ev, td)
+    ev = cal.crowding_flags(ev, cal.load_macro_days(REF))
+    # cik -> ticker whose price window covers the event (Sharadar free master); several tickers per cik allowed
+    req = pd.read_csv(REF / "ticker_request.csv", parse_dates=["firstpricedate", "lastpricedate"])
+    m = ev.merge(req[["cik", "ticker", "firstpricedate", "lastpricedate", "isdelisted"]], on="cik", how="inner")
+    m = m[(m["event_date"] >= m["firstpricedate"] - pd.Timedelta(days=5)) & (m["event_date"] <= m["lastpricedate"])]
+    m = m.sort_values(["cik", "event_date", "isdelisted"]).drop_duplicates(["cik", "event_date"], keep="first")
+    px = rtn.load_prices_parquet(RAW / "prices_yf_all.parquet", tickers=set(m["ticker"]))
+    have = set(px["ticker"])
+    m = m[m["ticker"].isin(have)]
+    print(f"events 2005+: {len(ev)}; with a ticker in window: {len(m)}; tickers with prices: {len(have)}")
+    stats = rtn.event_window_stats(px, factors, m)
+    panel = m.merge(stats.drop_duplicates(["cik", "ticker", "reaction_day"]), on=["cik", "ticker", "reaction_day"], how="inner")
+    panel = panel.drop_duplicates(["cik", "reaction_day"])
+    print(f"panel before filters: {len(panel)}")
     panel = panel[panel["price_m2"] >= 5]
     panel["market_surprise"] = panel["car_0_1"]
     panel["yq"] = pd.to_datetime(panel["reaction_day"]).dt.to_period("Q").astype(str)
     panel["surprise_rank"] = sur.decile_rank(panel["market_surprise"], panel["yq"])
-    panel["sue_rank"] = sur.decile_rank(panel["sue"], panel["yq"])
-    panel["same_day_n"] = cal.same_day_event_count(panel)
-    panel["season"] = cal.season_intensity(panel)
+    panel["sue_w"] = panel["sue"].clip(-10, 10)
+    panel["sue_rank"] = sur.decile_rank(panel["sue_w"], panel["yq"])
+    panel["same_day_n"] = cal.same_day_event_count(ev).reindex(panel.index) if False else panel["reaction_day"].map(ev.groupby("reaction_day").size()) - 1
+    panel["season"] = panel["reaction_day"].map(ev.groupby("reaction_day").size().sort_index().rolling(5, min_periods=1).sum())
     panel["dow"] = pd.to_datetime(panel["reaction_day"]).dt.dayofweek
     panel = pd.get_dummies(panel, columns=["dow"], prefix="dow", drop_first=True, dtype=float)
     panel.to_parquet(PROC / "panel.parquet")
-    print(f"panel rows={len(panel)} crowded_session={panel['crowded_session'].sum()}")
+    print(f"panel rows={len(panel)} crowded_session={int(panel['crowded_session'].sum())} firms={panel['cik'].nunique()}")
 
 
 def _git_committed(path: Path) -> bool:
@@ -113,33 +124,132 @@ def _git_committed(path: Path) -> bool:
         return False
 
 
+def _fast_interaction_coef(d, car_col, crowd_col, surprise_col, controls):
+    """Demeaned OLS point estimate of the surprise x crowded interaction (no SE); used for placebos."""
+    dd = d.copy()
+    dd["sxc"] = dd[surprise_col] * dd[crowd_col]
+    cols = [car_col, surprise_col, crowd_col, "sxc"] + controls
+    dm = inf.demean_within(dd, cols, by=["cik", "yq"])
+    X = np.column_stack([np.ones(len(dm)), dm[[c for c in cols if c != car_col]].values])
+    beta, *_ = np.linalg.lstsq(X, dm[car_col].values, rcond=None)
+    return float(beta[3])
+
+
 def stage_tests(args):
     panel = pd.read_parquet(PROC / "panel.parquet")
+    factors = pd.read_parquet(PROC / "factors.parquet")
     lo, hi = DEV if args.sample == "dev" else HOLDOUT
     if args.sample == "holdout" and not _git_committed(OUT / "results_dev.md"):
         sys.exit("Refusing to run the holdout: commit output/results_dev.md first.")
-    p = panel[(panel["event_date"] >= lo) & (panel["event_date"] <= hi)]
+    p = panel[(panel["event_date"] >= lo) & (panel["event_date"] <= hi)].copy()
     controls = ["same_day_n", "season"] + [c for c in p.columns if c.startswith("dow_")]
-    lines = [f"# Results ({args.sample} sample {lo.date()}..{hi.date()})", "",
-             f"N={len(p)}, crowded_session N={int(p['crowded_session'].sum())}", ""]
-    n_c = int(p["crowded_session"].sum()); n_u = int((p["crowded_session"] == 0).sum())
+    L = [f"# Results ({args.sample} sample {lo.date()}..{hi.date()})", "",
+         f"N={len(p)} firms={p['cik'].nunique()} crowded_session N={int(p['crowded_session'].sum())} unknown-session N={int(p['crowded_session'].isna().sum())}"]
+    n_c = int((p["crowded_session"] == 1).sum()); n_u = int((p["crowded_session"] == 0).sum())
     sigma = float(p["car_2_60"].std())
-    lines += [f"MDE (CAR[+2,+60], 80% power): {inf.mde(sigma, max(n_c,1), max(n_u,1)):.4f} with sigma={sigma:.4f}", ""]
-    for car in ["car_0_1", "car_2_20", "car_2_60"]:
-        for s in ["surprise_rank", "sue_rank"]:
+    L += [f"sigma(CAR[+2,+60])={sigma:.4f}; MDE for a difference in mean CAR at 80% power = {inf.mde(sigma, max(n_c,1), max(n_u,1)):.4f}", ""]
+    for s_col in ["surprise_rank", "sue_rank"]:
+        ex = p.dropna(subset=[s_col, "crowded_session"])
+        top = ex[(ex[s_col] >= 0.4) & (ex.crowded_session == 1)].shape[0]; bot = ex[(ex[s_col] <= -0.4) & (ex.crowded_session == 1)].shape[0]
+        L.append(f"cell check {s_col}: crowded top decile={top}, crowded bottom decile={bot} (pre-registered minimum 500)")
+    L.append("")
+    L.append("## H1 primary and secondary (coefficient on surprise_rank x crowded_session; firm+yq FE; 2-way clustered)")
+    prim = None
+    for car in ["car_2_60", "car_2_20"]:
+        for s_col in ["surprise_rank", "sue_rank"]:
             try:
-                b, se, t, n = inf.h1_regression(p, car_col=car, surprise_col=s, controls=controls)
-                lines.append(f"H1 {car} x {s}: sxc={b['sxc']:.5f} se={se['sxc']:.5f} t={t['sxc']:.2f} n={n}")
+                b, se, t, n = inf.h1_regression(p, car_col=car, surprise_col=s_col, controls=controls)
+                tag = "PRIMARY" if (car == "car_2_60" and s_col == "surprise_rank") else "secondary"
+                L.append(f"{tag} {car} x {s_col}: b={b['sxc']:.5f} se={se['sxc']:.5f} t={t['sxc']:.2f} 95%CI=[{b['sxc']-1.96*se['sxc']:.5f},{b['sxc']+1.96*se['sxc']:.5f}] n={n}; main effects: surprise b={b[s_col]:.5f}, crowded b={b['crowded_session']:.5f}")
+                if tag == "PRIMARY": prim = (b["sxc"], se["sxc"])
             except Exception as e:  # noqa: BLE001
-                lines.append(f"H1 {car} x {s}: failed ({e})")
+                L.append(f"{car} x {s_col}: failed ({e})")
+    L.append("")
+    L.append("## Immediate reaction and attention channel")
     try:
-        b, se, t, n = inf.h2_regression(p, surprise_col="sue", controls=controls)
-        lines.append(f"H2 sue on crowded: b={b['crowded_session']:.4f} se={se['crowded_session']:.4f} t={t['crowded_session']:.2f} n={n}")
+        b, se, t, n = inf.h1_regression(p, car_col="car_0_1", surprise_col="sue_rank", controls=controls)
+        L.append(f"CAR[0,+1] x sue_rank: sxc b={b['sxc']:.5f} t={t['sxc']:.2f}; sue main b={b['sue_rank']:.5f} n={n}")
     except Exception as e:  # noqa: BLE001
-        lines.append(f"H2: failed ({e})")
+        L.append(f"immediate reaction failed ({e})")
+    try:
+        d = p.dropna(subset=["abn_volume", "crowded_session"]).copy(); d["yq"] = d["yq"]
+        cols = ["abn_volume", "crowded_session"] + controls
+        dm = inf.demean_within(d, cols, by=["cik", "yq"])
+        b, se, t, n = inf.ols_twoway_cluster(dm["abn_volume"], dm[["crowded_session"] + controls], d["cik"], d["reaction_day"])
+        L.append(f"abnormal volume on crowded: b={b['crowded_session']:.4f} se={se['crowded_session']:.4f} t={t['crowded_session']:.2f} n={n}")
+        d["absr"] = d["car_0_1"].abs()
+        cols = ["absr", "crowded_session"] + controls
+        dm = inf.demean_within(d, cols, by=["cik", "yq"])
+        b, se, t, n = inf.ols_twoway_cluster(dm["absr"], dm[["crowded_session"] + controls], d["cik"], d["reaction_day"])
+        L.append(f"|CAR[0,+1]| on crowded (noise channel): b={b['crowded_session']:.4f} t={t['crowded_session']:.2f} n={n}")
+    except Exception as e:  # noqa: BLE001
+        L.append(f"volume/noise failed ({e})")
+    L.append("")
+    L.append("## Robustness grid (interaction coefficient, CAR[+2,+60] x surprise_rank)")
+    base = p.dropna(subset=["surprise_rank", "crowded_session", "car_2_60"])
+    grid = {
+        "calendar-day crowding": base.assign(crowded_session=base["crowded_calendar"].astype(float)),
+        "CPI only": base.assign(crowded_session=base["crowded_cpi"].astype(float)),
+        "EMPSIT only": base.assign(crowded_session=base["crowded_empsit"].astype(float)),
+        "FOMC only": base.assign(crowded_session=base["crowded_fomc"].astype(float)),
+        "excl in-session filings": base[base["session"] != "in_session"],
+        "excl 2008-09 and 2020": base[~base["event_date"].dt.year.isin([2008, 2009, 2020])],
+        "positive surprises only": base[base["surprise_rank"] > 0],
+        "negative surprises only": base[base["surprise_rank"] < 0],
+        "listed-now firms only": base[base["isdelisted"] == "N"],
+    }
+    rob = {}
+    for k, d in grid.items():
+        try:
+            b, se, t, n = inf.h1_regression(d, controls=controls)
+            rob[k] = (b["sxc"], se["sxc"], t["sxc"], n)
+            L.append(f"{k}: b={b['sxc']:.5f} se={se['sxc']:.5f} t={t['sxc']:.2f} n={n}")
+        except Exception as e:  # noqa: BLE001
+            L.append(f"{k}: failed ({e})")
+    L.append("")
+    L.append("## Placebos")
+    macro = cal.load_macro_days(REF)
+    for shift in (-7, 7):
+        pl = cal.crowding_flags(base.drop(columns=[c for c in base.columns if c.startswith("crowded_") or c == "macro_releases"]), inf.placebo_shift(macro, shift))
+        try:
+            b, se, t, n = inf.h1_regression(pl, controls=controls)
+            L.append(f"pseudo-macro days shifted {shift:+d}d: b={b['sxc']:.5f} t={t['sxc']:.2f} n={n}")
+        except Exception as e:  # noqa: BLE001
+            L.append(f"shift {shift}: failed ({e})")
+    rng = np.random.default_rng(20261030)
+    td = pd.DatetimeIndex(factors.index)
+    n_per_year = macro[macro["date"].dt.year.between(lo.year, hi.year)].groupby(macro["date"].dt.year).size().to_dict()
+    draws = []
+    B = args.placebos
+    for i in range(B):
+        pl = inf.placebo_random_days(td, n_per_year, rng)
+        flags = cal.crowding_flags(base[["cik", "session", "reaction_day", "acceptance_et"]].copy(), pl.assign(time_et=pd.Timestamp("08:30").time()), releases=("PLACEBO",))
+        d = base.assign(crowded_session=flags["crowded_session"].values).dropna(subset=["crowded_session"])
+        draws.append(_fast_interaction_coef(d, "car_2_60", "crowded_session", "surprise_rank", controls))
+    draws = np.array(draws)
+    if prim is not None and len(draws):
+        L.append(f"random-day placebo ({B} draws): null mean={draws.mean():.5f} sd={draws.std():.5f}; actual b={prim[0]:.5f}; share |placebo|>=|actual| = {(np.abs(draws) >= abs(prim[0])).mean():.3f}")
+    np.save(OUT / f"placebo_draws_{args.sample}.npy", draws)
+    L.append("")
+    L.append("## Calendar-time portfolios (top minus bottom market-surprise decile, 60-day hold, equal-weighted)")
+    px = rtn.load_prices_parquet(RAW / "prices_yf_all.parquet", tickers=set(base["ticker"]))
+    fx = factors.loc[(factors.index >= lo - pd.Timedelta(days=400)) & (factors.index <= hi + pd.Timedelta(days=120))]
+    for name, d in [("crowded", base[base.crowded_session == 1]), ("uncrowded", base[base.crowded_session == 0])]:
+        port, held, to = inf.calendar_time_portfolio(d, px, fx)
+        a, t, n = inf.newey_west_alpha(port.dropna(), fx)
+        gross = port.dropna()
+        cost = float((d["cs_spread"].median() if d["cs_spread"].notna().any() else 0.0))
+        net = gross - to.reindex(gross.index).fillna(0) * cost
+        an, tn, _ = inf.newey_west_alpha(net, fx)
+        L.append(f"{name}: daily alpha={a*1e4:.2f}bp (t={t:.2f}), net of Corwin-Schultz {cost*1e4:.0f}bp half-spread x turnover: {an*1e4:.2f}bp (t={tn:.2f}); mean names held={held.mean():.0f}; mean daily turnover={to.mean():.3f}; n days={n}")
+        if name == "crowded": pc = port
+        else: pu = port
+    diff = (pc - pu).dropna()
+    a, t, n = inf.newey_west_alpha(diff, fx)
+    L.append(f"difference (crowded minus uncrowded): daily alpha={a*1e4:.2f}bp t={t:.2f} n={n}")
     OUT.mkdir(exist_ok=True)
-    (OUT / f"results_{args.sample}.md").write_text("\n".join(lines))
-    print("\n".join(lines))
+    (OUT / f"results_{args.sample}.md").write_text("\n".join(L))
+    print("\n".join(L))
 
 
 def stage_h2(args):
@@ -187,5 +297,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("stage", choices=STAGES)
     ap.add_argument("--sample", default="dev", choices=["dev", "holdout"])
+    ap.add_argument("--placebos", type=int, default=1000)
     a = ap.parse_args()
     STAGES[a.stage](a)
