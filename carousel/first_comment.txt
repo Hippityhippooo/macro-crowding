@@ -1,4 +1,4 @@
-Code, data build and the pre-registration are here: [REPO URL]. The pre-registration commit is [HASH]. I committed the development result before the holdout ran, so you can check the order yourself.
+Code, data build and the pre-registration are here: [REPO URL]. The pre-registration commit is 5ae91c8, the development result is b3ce22d and the holdout is e9da60b. I committed the development result before the holdout ran, so you can check the order yourself.
 
 The caveat I'd check first if this were someone else's post: prices are from Yahoo Finance, so most delisted firms are missing (94 of 6,274 covered). Their crowded-session share was 14.6% against 15.9% for survivors, so the gap is small, but it's there.
 
