@@ -42,3 +42,9 @@ Paramount Global). Rules, applied in run.py returns stage:
 3. CARs winsorised at the 1st/99th percentile within the panel; raw CARs kept as *_raw and reported in a
    robustness line. Ticker reuse cannot be detected without a second price source; it is a stated limitation.
 No hypothesis test on real data has been run before this entry.
+
+## 2026-11-02, exploratory analyses and presentation
+
+- Exploratory (section 9 of the pre-registration, labelled on slide and in RESULTS.md): illiquidity terciles, filing lag vs news sign, acceptance-time distribution, drift by year, pooled calendar-time books.
+- Deck rebuilt (carousel/build2.py, charts3.py): five layouts, page-scale charts, sharp photos in solid panels. Fed (cover) and SEC (method) photos supplied by Faldo; rights to confirm.
+- Copy rewritten through the new linkedin-voice skill (v0.1, proposed 2 Nov). No figure changed; fidelity checked against RESULTS.md.
