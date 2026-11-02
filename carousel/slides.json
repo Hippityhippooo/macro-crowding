@@ -1,114 +1,52 @@
 [
- {
-  "type": "cover",
-  "kicker": "Earnings season meets the macro calendar",
-  "title": "When CPI and earnings land in the same session, who reads the 10-Q?",
-  "sub": "I timed every US earnings 8-K since 2005 to the second and tested whether the macro calendar changes how the market reads them.",
-  "chips": [
-   "421,885 announcements",
-   "2005–2025",
-   "pre-registered",
-   "holdout run once"
-  ],
-  "name": "Faldo Lyon · November 2026"
- },
- {
-  "type": "figure",
-  "kicker": "The scene",
-  "title": "The Fed meets in the middle of earnings season",
-  "img": "calendar.png",
-  "paras": [
-   "FOMC statement days carry 126 earnings 8-Ks on average against 72 on an ordinary day. One announcement in seven shares its session with CPI, the jobs report or the Fed."
-  ]
- },
- {
-  "type": "steps",
-  "kicker": "Method",
-  "title": "How the test was built",
-  "steps": [
-   "Every 8-K with Item 2.02 from EDGAR; time of day from the acceptance stamp.",
-   "Crowded: the news first trades in the same session as CPI, payrolls or the FOMC statement.",
-   "Surprise two ways: first-filed GAAP EPS against last year, and the two-day market reaction.",
-   "60-day drift against FF5 plus momentum; firm and quarter fixed effects; two-way clustered errors.",
-   "Thresholds committed first; 2016–2025 held out and run once."
-  ]
- },
- {
-  "type": "figure",
-  "kicker": "Finding 1",
-  "title": "Crowded-session earnings drift like any other",
-  "img": "car_paths.png",
-  "paras": [
-   "After the two-day reaction, the top-minus-bottom surprise book drifts 1.11 percentage points on crowded sessions and 1.48 on quiet ones over 60 days. 26,531 extreme-decile events, 2005–2025."
-  ]
- },
- {
-  "type": "figure",
-  "kicker": "Finding 1, the test",
-  "title": "The development sample said less drift. The holdout said no.",
-  "img": "coef.png",
-  "paras": [
-   "2005–2015: −1.48 pp extra drift, top versus bottom surprise decile, on crowded sessions (t −2.1), all of it on FOMC days. 2016–2025, run once: +0.75 pp (t 1.1), FOMC days +0.06. What replicates is zero."
-  ]
- },
- {
-  "type": "figure",
-  "kicker": "Placebo",
-  "title": "Random calendars give the same answer",
-  "img": "placebo.png",
-  "paras": [
-   "Redrawing the macro days at random 1,000 times gives a null spread of 0.73 pp. The holdout estimate sits inside it: 30% of random calendars produce a larger coefficient."
-  ]
- },
- {
-  "type": "figure",
-  "kicker": "Finding 2",
-  "title": "Bad quarters are not hidden behind the Fed",
-  "img": "h2.png",
-  "paras": [
-   "The share of announcements with EPS below last year is the same on crowded and quiet sessions in both samples. Regression coefficients 0.00 and 0.02 SUE units, neither distinguishable from zero."
-  ]
- },
- {
-  "type": "figure",
-  "kicker": "What changed over 20 years",
-  "title": "Filing on the day went from 57% to 89%",
-  "img": "sameday.png",
-  "paras": [
-   "Only 8-Ks filed on the release day carry a usable time of day. 24% of events have none and sit outside the session test; the share falls every year."
-  ]
- },
- {
-  "type": "list",
-  "kicker": "What limits it",
-  "title": "Read these before the headline",
-  "items": [
-   "Prices are from Yahoo Finance. Delisted firms are mostly missing; their crowded share was 14.6% against 15.9% for survivors.",
-   "GAAP EPS against last year is not the consensus number analysts trade.",
-   "Holdout standard error 0.66 pp, so effects under about 1.3 pp (top versus bottom decile) are not ruled out.",
-   "737 tickers with a daily move over 100% dropped whole; 48 BLS dates pair with a revision date."
-  ]
- },
- {
-  "type": "text",
-  "kicker": "Verdict",
-  "title": "Attention is not the scarce thing on Fed day",
-  "paras": [
-   "My read: the market absorbs an earnings release on a CPI, jobs or FOMC session about as fully as on a quiet one, and firms do not use those sessions to bury weak quarters.",
-   "What would change it: a consensus-based surprise, or delisted-firm prices, showing a gap this data cannot see.",
-   "Code and pre-registration on GitHub; link in the first comment."
-  ]
- },
- {
-  "type": "list",
-  "kicker": "Sources and checks",
-  "title": "Where every number comes from",
-  "items": [
-   "SEC EDGAR submissions and companyfacts via dated mirrors; four filings checked against live index pages.",
-   "FOMC dates: federalreserve.gov. CPI and jobs dates: ALFRED, St. Louis Fed.",
-   "Factors: Kenneth French library, daily FF5 and momentum, September 2026 vintage.",
-   "Prices: Yahoo Finance, listed names; delisted coverage measured and reported.",
-   "17 unit tests on synthetic EDGAR fixtures; holdout gated behind a committed development result."
-  ]
- }
+  {"type": "cover", "kicker": "Earnings season meets the macro calendar",
+   "title": "When CPI and earnings land in the same session, who reads the 10-Q?",
+   "sub": "I timed every US earnings 8-K since 2005 to the second and tested whether the macro calendar changes how the market reads them.",
+   "chips": ["421,885 announcements", "2005–2025", "pre-registered", "holdout run once"],
+   "name": "Faldo Lyon · November 2026"},
+  {"type": "figure", "kicker": "The scene", "title": "The Fed meets in the middle of earnings season",
+   "img": "heatmap.png",
+   "paras": ["Announcements per trading day, by year and position in the quarter. FOMC statement days carry 126 earnings 8-Ks on average against 72 on an ordinary day; one in seven announcements shares its session with CPI, the jobs report or the Fed."]},
+  {"type": "figure", "kicker": "The timing", "title": "The EDGAR clock separates the sessions",
+   "img": "minutes.png",
+   "paras": ["20% of releases are accepted in the 15 minutes after the close; 27% between 06:00 and 08:30. A 06:46 filing on a CPI day competes with the 08:30 print; a 16:30 filing on Fed day competes with nothing. Crowding is defined on that clock."]},
+  {"type": "steps", "kicker": "Method", "title": "How the test was built",
+   "steps": ["Every 8-K with Item 2.02 from EDGAR; time of day from the acceptance stamp.",
+             "Crowded: the news first trades in the same session as CPI, payrolls or the FOMC statement.",
+             "Surprise two ways: first-filed GAAP EPS against last year, and the two-day market reaction.",
+             "60-day drift against FF5 plus momentum; firm and quarter fixed effects; two-way clustered errors.",
+             "Thresholds committed first; 2016–2025 held out and run once."]},
+  {"type": "figure", "kicker": "Finding 1", "title": "Crowded-session earnings drift like any other",
+   "img": "car_paths.png",
+   "paras": ["After the two-day reaction, the top-minus-bottom surprise book drifts 1.11 percentage points on crowded sessions and 1.48 on quiet ones over 60 days. 26,531 extreme-decile events, 2005–2025."]},
+  {"type": "figure", "kicker": "Finding 1, the test", "title": "The development sample said less drift. The holdout said no.",
+   "img": "coef.png",
+   "paras": ["2005–2015: −1.48 pp extra drift, top versus bottom surprise decile, on crowded sessions (t −2.1), all of it on FOMC days. 2016–2025, run once: +0.75 pp (t 1.1), FOMC days +0.06. What replicates is zero."]},
+  {"type": "figure", "kicker": "Placebo", "title": "Random calendars give the same answer",
+   "img": "placebo.png",
+   "paras": ["Redrawing the macro days at random 1,000 times gives a null spread of 0.73 pp. The holdout estimate sits inside it: 30% of random calendars produce a larger coefficient."]},
+  {"type": "figure", "kicker": "Positive control, exploratory", "title": "The drift exists. The calendar doesn't move it.",
+   "img": "positive_control.png",
+   "paras": ["Split by Corwin-Schultz spread: drift is 2.27 pp in the illiquid third against 0.63 in the liquid third, the pattern limited attention predicts. The crowded-session effect is flat in all three (t −0.5, 0.2, 0.1)."]},
+  {"type": "figure", "kicker": "Finding 2", "title": "Bad quarters are not hidden behind the Fed",
+   "img": "h2.png",
+   "paras": ["The share of announcements with EPS below last year is the same on crowded and quiet sessions in both samples. Regression coefficients 0.00 and 0.02 SUE units, neither distinguishable from zero."]},
+  {"type": "figure", "kicker": "What firms do shift, exploratory", "title": "Bad news delays the filing, not the date",
+   "img": "lag.png",
+   "paras": ["Quarters with EPS below last year are 1.0 pp more likely to have the 8-K filed after the release day (within-firm, t 5.8, n 177,209) and more likely to land on Friday after the close, 1.7% against 1.4%."]},
+  {"type": "figure", "kicker": "Context, exploratory", "title": "Post-earnings drift by year, 2005–2025",
+   "img": "pead_by_year.png",
+   "paras": ["60-day drift, top versus bottom market-surprise decile, with 95% bands. Strongest in 2007 (4.4 pp) and 2024 (3.9 pp); zero in 2020. The crowding test runs inside this, not instead of it."]},
+  {"type": "figure", "kicker": "In dollars, exploratory", "title": "Neither book is a trade",
+   "img": "equity.png",
+   "paras": ["Calendar-time long top, short bottom decile, 60-day hold. Quiet-session events: 1.21 bp a day (t 1.9), 237 names. Crowded-session events: 0.56 bp (t 0.4), 50 names, so the path is mostly noise. Net of spreads both are negative."]},
+  {"type": "list", "kicker": "What limits it", "title": "Read these before the headline",
+   "items": ["Prices are from Yahoo Finance. Delisted firms are mostly missing; their crowded share was 14.6% against 15.9% for survivors.",
+             "GAAP EPS against last year is not the consensus number analysts trade.",
+             "Holdout standard error 0.66 pp, so effects under about 1.3 pp (top versus bottom decile) are not ruled out.",
+             "Slides marked exploratory were not pre-registered. 737 tickers with a daily move over 100% dropped whole."]},
+  {"type": "text", "kicker": "Verdict", "title": "Attention is not the scarce thing on Fed day",
+   "paras": ["My read: the market absorbs an earnings release on a CPI, jobs or FOMC session about as fully as on a quiet one. Firms do not use those sessions to bury weak quarters; what they delay is the paperwork.",
+             "What would change it: a consensus-based surprise, or delisted-firm prices, showing a gap this data cannot see.",
+             "Code, data build and pre-registration on GitHub; link in the first comment."]}
 ]

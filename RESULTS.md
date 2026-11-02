@@ -91,6 +91,17 @@ By release: all |t| < 1.1 in both samples. H2 rejected in both samples.
 - 48 BLS dates sit in within-10-day pairs with a revision date; both count as crowded.
 - Release times (08:30 ET BLS, 14:00/14:15 ET FOMC) are parameters, not verified per date.
 
-## Exploratory (not pre-registered)
+## Exploratory (not pre-registered, run 2026-11-02 after both samples)
 
-None run.
+- Positive control, Corwin-Schultz spread terciles within year-quarter (pooled 2005-2025): drift main effect
+  (top vs bottom decile, CAR[+2,+60]) liquid 0.0063 (se 0.0024), middle 0.0105 (0.0028), illiquid 0.0227
+  (0.0036); crowded interaction -0.0032 (0.0062), 0.0011 (0.0071), 0.0007 (0.0088); n 42,676 / 41,570 / 41,013.
+- Filing lag vs news sign (all events with SUE, 2005-2025, n 177,209): share of 8-Ks filed after the release
+  day 16.87% when SUE<0 vs 15.69% otherwise; within-firm, year-quarter FE, two-way clustered: +0.0095 (t 5.76).
+  Friday-after-close share 1.72% vs 1.39%. Post-close share 59.05% vs 57.98%.
+- Timing: 20.3% of classified releases accepted 16:00-16:15 ET; 27.0% 06:00-08:30; 9.2% 08:30-09:30.
+  Pre-market filers accepted before 08:30: 74.4% on CPI/jobs days vs 74.3% on other days (n 8,352 BLS-day).
+- Drift by year (top vs bottom market-surprise decile, pooled OLS, pp): output/exhibit_pead_by_year.csv;
+  2007 4.42 (se 0.74), 2024 3.93 (0.58), 2020 -0.03 (0.72).
+- Calendar-time books pooled 2005-2025: quiet-session events 1.21 bp/day (t 1.94, 237 names); crowded-session
+  0.56 bp/day (t 0.41, 50 names).
