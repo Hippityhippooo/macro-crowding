@@ -1,7 +1,7 @@
 FOMC days carry 126 earnings releases. Normal days carry 72. Does the market read them any differently?
 
-I pulled every US earnings 8-K since 2005, 421,885 of them, timed each to the second from EDGAR, and asked four things: how crowded is the calendar, does crowding change the post-earnings drift, do firms park bad quarters on those days, and can you trade any of it.
+I pulled every US earnings 8-K since 2005, 421,885 of them, timed each to the second from EDGAR, and asked four things: how crowded is the calendar, does crowding change the drift, do firms park bad quarters there, and can you trade it.
 
-Thresholds written down first; 2016–2025 held out and run once. My first sample found an effect on Fed days. The holdout killed it. Firms don't hide bad quarters behind the Fed either; what they delay is the 8-K. Nothing covers its spread costs.
+Thresholds written down first; 2016–2025 held out and run once. My first sample found an effect on Fed days. The holdout killed it. Firms don't hide bad quarters behind the Fed; what they delay is the 8-K. Nothing covers its costs.
 
 Do you treat a Fed-day release differently? I'd actually like to know.
