@@ -7,15 +7,14 @@
   "chips": [
    "421,885 announcements",
    "2005–2025",
-   "pre-registered",
-   "holdout run once"
+   "pre-registered, holdout run once"
   ],
   "name": "Faldo Lyon · November 2026",
   "credit": "photo: Federal Reserve"
  },
  {
   "type": "hero2",
-  "kicker": "The number",
+  "kicker": "Where the calendars collide",
   "title": "Earnings 8-Ks per trading day, 2005–2025",
   "a": "126",
   "a_label": "on FOMC statement days",
@@ -23,7 +22,8 @@
   "b_label": "on every other day",
   "paras": [
    "The Fed's eight meetings a year sit inside earnings season. One announcement in seven shares its first trading session with CPI, the jobs report or the FOMC statement."
-  ]
+  ],
+  "dark": true
  },
  {
   "type": "figure",

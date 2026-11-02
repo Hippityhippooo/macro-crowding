@@ -40,6 +40,7 @@ html,body{width:1080px;height:1350px;background:var(--cream);color:var(--ink);fo
 .slide.photo h2,.slide.photo .kicker,.slide.photo .page{text-shadow:0 0 18px rgba(246,241,231,.9)}
 .slide.dark .kicker,.slide.dark .page,.slide.dark .muted,.slide.dark .herolabel{color:#b9b2a3}
 .slide.dark h2{color:#f6f1e7}
+.slide.dark .hero-row .num.accent{color:#7faae0} .slide.dark .hero-row .num.grey{color:#b9b2a3} .slide.dark .hero-row .lab{color:#b9b2a3}
 .slide.dark ol li::before{color:#7faae0}
 .slide.dark .fig img{filter:none}
 .hero-row{display:flex;gap:48px;align-items:flex-end;margin:40px 0 20px}
@@ -86,8 +87,8 @@ def html_for(slide: dict, n: int, N: int) -> str:
     t = slide["type"]
     body = ""
     if t == "cover":
-        chips = "".join(f'<span class="chip">{c}</span>' for c in slide.get("chips", []))
-        body = f'<div class="bg"></div><div class="veil"></div><div class="kicker">{slide.get("kicker","")}</div><h1 class="small">{slide["title"]}</h1><div class="lead"><i>{slide["sub"]}</i></div><div class="chips" style="margin-bottom:40px">{chips}</div><div class="name">{slide["name"]}</div><div class="swipe">swipe &#8594;</div><div class="credit" style="position:absolute;top:96px;right:96px;font-family:JetBrains Mono,monospace;font-size:22px;color:#f6f1e7;text-shadow:0 0 10px rgba(0,0,0,.6)">{slide.get("credit","")}</div>'
+        chips = f'<div class="muted" style="font-family:JetBrains Mono,monospace;font-size:26px;margin-top:8px">{" · ".join(slide.get("chips", []))}</div>'
+        body = f'<div class="bg"></div><div class="veil"></div><div class="kicker">{slide.get("kicker","")}</div><h1 class="small">{slide["title"]}</h1><div class="lead"><i>{slide["sub"]}</i></div><div style="margin-bottom:60px">{chips}</div><div class="name">{slide["name"]}</div><div class="swipe">swipe &#8594;</div><div class="credit" style="position:absolute;top:96px;right:96px;font-family:JetBrains Mono,monospace;font-size:22px;color:#f6f1e7;text-shadow:0 0 10px rgba(0,0,0,.6)">{slide.get("credit","")}</div>'
     elif t == "hero2":
         paras = "".join(f'<p class="body">{p}</p>' for p in slide.get("paras", []))
         body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><div class="hero-row"><div><div class="num accent">{slide["a"]}</div><div class="lab">{slide["a_label"]}</div></div><div><div class="num grey">{slide["b"]}</div><div class="lab">{slide["b_label"]}</div></div></div>{paras}'
