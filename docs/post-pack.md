@@ -1,8 +1,8 @@
 # Post pack (linkedin-presence section 8), 30 Oct 2026
 
-Clearance: NOT CLEARED. Justin has not seen the deck. Public data only; US single-stock research by a Gotrade employee. No named security with a view, so no [[DISCLAIMER]] slot placed; E16 (POJK on non-licensed parties sharing financial information) is a judgement for Justin.
+Clearance: personal research on public data, posted from a personal account. Courtesy heads-up to Justin before posting (Faldo is identifiable as a Gotrade employee and the subject is US equities); not a sign-off requirement. No named security with a view, so no [[DISCLAIMER]] slot placed; E16 (POJK on non-licensed parties sharing financial information) is a judgement for Justin.
 
-Package: A, document carousel (E1, E19), 14 slides (5 marked exploratory on the slide), 1080x1350, carousel/out/carousel.pdf (1.2 MB).
+Package: A, document carousel (E1, E19), 15 slides (5 marked exploratory on the slide; cover on a heatmap backdrop, hero-number slide, two dark exploratory slides), 1080x1350, carousel/out/carousel.pdf (1.2 MB).
 Document title (53 chars): Does the market read earnings differently on Fed day?
 Caption: carousel/caption.txt (599 chars, first block 116). First comment: carousel/first_comment.txt (970 chars) with [REPO URL] and [HASH] to fill after the push.
 

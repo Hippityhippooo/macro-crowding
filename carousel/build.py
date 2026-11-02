@@ -28,6 +28,19 @@ CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:1080px;height:1350px;background:var(--cream);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;-webkit-font-smoothing:antialiased}
 .slide{position:relative;width:1080px;height:1350px;padding:96px;display:flex;flex-direction:column}
+.slide.cover{justify-content:flex-end}
+.slide.cover .bg{position:absolute;inset:0;background:url('file://%(figs)s/heatmap_bg.png') center/cover no-repeat;opacity:.9}
+.slide.cover .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(246,241,231,.05) 0%%,rgba(246,241,231,.94) 50%%,#f6f1e7 100%%)}
+.slide.cover > *:not(.bg):not(.veil):not(.name):not(.swipe){position:relative}
+.slide.dark{background:#141311;color:#f6f1e7}
+.slide.dark .kicker,.slide.dark .page,.slide.dark .muted,.slide.dark .herolabel{color:#b9b2a3}
+.slide.dark h2{color:#f6f1e7}
+.slide.dark ol li::before{color:#7faae0}
+.slide.dark .fig img{filter:none}
+.hero-row{display:flex;gap:48px;align-items:flex-end;margin:40px 0 20px}
+.hero-row .num{font-family:'JetBrains Mono',monospace;font-size:240px;line-height:.95;font-weight:600}
+.hero-row .num.accent{color:var(--accent)} .hero-row .num.grey{color:var(--grey)}
+.hero-row .lab{font-size:34px;color:var(--grey);margin-top:14px}
 .kicker{font-family:'JetBrains Mono',monospace;font-size:24px;letter-spacing:.02em;color:var(--grey);margin-bottom:28px}
 .page{position:absolute;top:96px;right:96px;font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--grey)}
 h1{font-family:Fraunces,serif;font-weight:600;font-size:84px;line-height:1.04;letter-spacing:-.01em;margin-bottom:36px}
@@ -69,7 +82,10 @@ def html_for(slide: dict, n: int, N: int) -> str:
     body = ""
     if t == "cover":
         chips = "".join(f'<span class="chip">{c}</span>' for c in slide.get("chips", []))
-        body = f'<div class="kicker">{slide.get("kicker","")}</div><h1>{slide["title"]}</h1><div class="lead"><i>{slide["sub"]}</i></div><div class="chips">{chips}</div><div class="name">{slide["name"]}</div><div class="swipe">swipe &#8594;</div>'
+        body = f'<div class="bg"></div><div class="veil"></div><div class="kicker">{slide.get("kicker","")}</div><h1>{slide["title"]}</h1><div class="lead"><i>{slide["sub"]}</i></div><div class="chips" style="margin-bottom:120px">{chips}</div><div class="name">{slide["name"]}</div><div class="swipe">swipe &#8594;</div>'
+    elif t == "hero2":
+        paras = "".join(f'<p class="body">{p}</p>' for p in slide.get("paras", []))
+        body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><div class="hero-row"><div><div class="num accent">{slide["a"]}</div><div class="lab">{slide["a_label"]}</div></div><div><div class="num grey">{slide["b"]}</div><div class="lab">{slide["b_label"]}</div></div></div>{paras}'
     elif t == "text":
         paras = "".join(f'<p class="body">{p}</p>' for p in slide.get("paras", []))
         hero = f'<div class="hero {slide.get("hero_class","")}">{slide["hero"]}</div><div class="herolabel">{slide["hero_label"]}</div>' if slide.get("hero") else ""
@@ -90,7 +106,7 @@ def html_for(slide: dict, n: int, N: int) -> str:
         body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><ul class="plain">{items}</ul>'
     foot = f'<div class="foot"><span>{slide.get("foot","")}</span></div>' if slide.get("foot") else ""
     page = f'<div class="page">{n} / {N}</div>' if t != "cover" else ""
-    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS % {'fonts': Path.home() / 'fonts'}}</style></head><body><div class='slide{" roomy" if t == "text" else ""}'>{page}{body}{foot}</div></body></html>"
+    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS % {'fonts': Path.home() / 'fonts', 'figs': HERE / 'figs'}}</style></head><body><div class='slide{" roomy" if t == "text" else ""}{" cover" if t == "cover" else ""}{" dark" if slide.get("dark") else ""}'>{page}{body}{foot}</div></body></html>"
 
 
 def main():
