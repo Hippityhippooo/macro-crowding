@@ -28,49 +28,49 @@ CSS = f"""
 *{{box-sizing:border-box;margin:0;padding:0}}
 html,body{{width:{W}px;height:{H}px;overflow:hidden;background:var(--cream);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;-webkit-font-smoothing:antialiased}}
 .s{{position:relative;width:{W}px;height:{H}px;overflow:hidden}}
-.num{{position:absolute;top:56px;right:64px;font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--muted)}}
+.num{{position:absolute;top:72px;right:88px;font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--muted)}}
 .tag{{font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--muted);letter-spacing:.01em;max-width:780px}}
 h1{{font-family:Fraunces,serif;font-weight:600;line-height:1.02;letter-spacing:-.015em}}
-h2{{font-family:Fraunces,serif;font-weight:600;font-size:66px;line-height:1.06;letter-spacing:-.012em;margin:14px 0 18px}}
-.sub{{font-size:36px;line-height:1.35;color:var(--ink)}}
+h2{{font-family:Fraunces,serif;font-weight:600;font-size:58px;line-height:1.08;letter-spacing:-.012em;margin:14px 0 18px}}
+.sub{{font-size:33px;line-height:1.36;color:var(--ink)}}
 .navy{{background:var(--navy);color:var(--cream)}} .navy .tag,.navy .num{{color:#aab4c3}} .navy .sub{{color:#e6e9ee}}
 /* photo cover */
 .cover .photo{{position:absolute;inset:0;background:url('file://{PHOTOS}/fed_cover.png') center/cover no-repeat}}
-.cover .panel{{position:absolute;left:0;right:0;bottom:0;background:var(--ink);color:var(--cream);padding:64px 64px 56px}}
-.cover h1{{font-size:88px;margin:16px 0 24px}}
-.cover .sub{{color:#d9d2c2;font-family:Fraunces,serif;font-style:italic;font-weight:400;font-size:38px}}
+.cover .panel{{position:absolute;left:0;right:0;bottom:0;background:var(--ink);color:var(--cream);padding:72px 88px 64px}}
+.cover h1{{font-size:78px;margin:16px 0 24px}}
+.cover .sub{{color:#d9d2c2;font-family:Fraunces,serif;font-style:italic;font-weight:400;font-size:34px}}
 .cover .meta{{display:flex;justify-content:space-between;margin-top:40px;font-family:'JetBrains Mono',monospace;font-size:24px;color:#b9b2a3}}
-.cover .credit{{position:absolute;top:56px;right:64px;font-family:'JetBrains Mono',monospace;font-size:22px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6)}}
+.cover .credit{{position:absolute;top:72px;right:88px;font-family:'JetBrains Mono',monospace;font-size:22px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.6)}}
 /* bignum */
-.bignum{{padding:64px}}
+.bignum{{padding:88px}}
 .bignum .pair{{display:flex;gap:56px;align-items:flex-end;margin-top:140px}}
-.bignum .n{{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:300px;line-height:.9;letter-spacing:-.04em}}
+.bignum .n{{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:250px;line-height:.9;letter-spacing:-.04em}}
 .bignum .n.a{{color:var(--accent-l)}} .bignum .n.b{{color:#6f7d92}}
 .bignum .l{{font-size:34px;color:#aab4c3;margin-top:22px;max-width:380px;line-height:1.3}}
-.bignum .sub{{margin-top:120px;font-size:40px;max-width:900px}}
+.bignum .sub{{margin-top:110px;font-size:36px;max-width:860px}}
 /* chart */
-.chart .head{{padding:56px 64px 0;height:{H - 900}px}}
-.chart .img{{position:absolute;left:0;right:0;bottom:0;height:900px}}
-.chart .img img{{width:1080px;height:900px;display:block}}
-.chart.tall .head{{height:{H - 1050}px;padding-top:44px}} .chart.tall h2{{font-size:58px;margin-top:10px}} .chart.tall .img{{height:1050px}} .chart.tall .img img{{height:1050px}}
+.chart .head{{padding:72px 88px 0;height:{H - 860}px}}
+.chart .img{{position:absolute;left:60px;right:60px;bottom:40px;height:800px}}
+.chart .img img{{width:960px;height:800px;display:block}}
+.chart.tall .head{{height:{H - 980}px;padding-top:64px}} .chart.tall h2{{font-size:52px;margin-top:10px}} .chart.tall .img{{height:933px;bottom:40px}} .chart.tall .img img{{height:933px}}
 /* split photo */
 .split .photo{{position:absolute;left:0;top:0;bottom:0;width:470px;background:url('file://{PHOTOS}/sec_cover.png') center/cover no-repeat}}
-.split .panel{{position:absolute;left:470px;top:0;bottom:0;right:0;background:var(--ink);color:var(--cream);padding:64px 56px}}
+.split .panel{{position:absolute;left:470px;top:0;bottom:0;right:0;background:var(--ink);color:var(--cream);padding:80px 72px 72px 64px}}
 .split ol{{list-style:none;counter-reset:n;margin-top:30px}}
-.split ol li{{counter-increment:n;font-size:33px;line-height:1.3;padding-left:62px;position:relative;margin-bottom:34px;color:#e9e2d2}}
+.split ol li{{counter-increment:n;font-size:30px;line-height:1.32;padding-left:58px;position:relative;margin-bottom:30px;color:#e9e2d2}}
 .split ol li::before{{content:counter(n, decimal-leading-zero);position:absolute;left:0;top:4px;font-family:'JetBrains Mono',monospace;font-size:26px;color:var(--accent-l)}}
-.split h2{{font-size:58px;color:var(--cream)}} .split .tag,.split .num{{color:#b9b2a3}}
+.split h2{{font-size:52px;color:var(--cream)}} .split .tag,.split .num{{color:#b9b2a3}}
 .split .credit{{position:absolute;left:24px;bottom:24px;font-family:'JetBrains Mono',monospace;font-size:20px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7)}}
 /* statement */
-.statement{{padding:64px;display:flex;flex-direction:column}}
-.statement h1{{font-size:96px;margin-top:120px}}
+.statement{{padding:88px;display:flex;flex-direction:column}}
+.statement h1{{font-size:84px;margin-top:120px}}
 .statement h1 em{{font-style:italic;font-weight:400;color:var(--accent)}}
-.statement .sub{{margin-top:56px;font-size:36px;max-width:900px}}
-.statement .foot{{position:absolute;left:64px;right:64px;bottom:56px;font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--muted)}}
+.statement .sub{{margin-top:56px;font-size:33px;max-width:860px}}
+.statement .foot{{position:absolute;left:88px;right:88px;bottom:72px;font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--muted)}}
 /* list */
-.list{{padding:64px}}
+.list{{padding:88px}}
 .list ul{{list-style:none;margin-top:36px}}
-.list ul li{{font-size:42px;line-height:1.34;margin-bottom:48px;padding-left:52px;position:relative}}
+.list ul li{{font-size:37px;line-height:1.36;margin-bottom:44px;padding-left:52px;position:relative}}
 .list ul li::before{{content:'';position:absolute;left:0;top:20px;width:22px;height:4px;background:var(--accent)}}
 """
 
