@@ -1,7 +1,7 @@
 FOMC days carry 126 earnings releases on average. Ordinary days carry 72. Does the market read them any differently?
 
-I built every US earnings 8-K since 2005 from EDGAR (421,885), timed each to the second, and tested whether releases sharing a session with CPI, the jobs report or the Fed drift more, and whether firms park bad quarters there.
+I built every US earnings 8-K since 2005 from EDGAR (421,885), timed each to the second, and tested whether releases sharing a session with CPI, jobs or the Fed drift more, and whether firms park bad quarters there.
 
-Pre-registered, holdout run once. What replicates is zero. The drift attention theory predicts is there, 3.6x larger in illiquid names, and the calendar does not move it. What bad news shifts is the filing: late 8-Ks and Friday nights.
+Pre-registered, holdout run once. What replicates is zero. The drift attention theory predicts is there, 3.6x larger in illiquid names; the calendar does not move it. What bad news shifts is the filing: late 8-Ks and Friday nights.
 
-If you trade earnings: do you treat a Fed-day release differently?
+Do you treat a Fed-day release differently?
