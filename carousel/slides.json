@@ -10,7 +10,8 @@
    "pre-registered",
    "holdout run once"
   ],
-  "name": "Faldo Lyon · November 2026"
+  "name": "Faldo Lyon · November 2026",
+  "credit": "photo: Federal Reserve"
  },
  {
   "type": "hero2",
@@ -52,7 +53,9 @@
    "Surprise two ways: first-filed GAAP EPS against last year, and the two-day market reaction.",
    "60-day drift against FF5 plus momentum; firm and quarter fixed effects; two-way clustered errors.",
    "Thresholds committed first; 2016–2025 held out and run once."
-  ]
+  ],
+  "photo": true,
+  "credit": "photo: SEC headquarters"
  },
  {
   "type": "figure",

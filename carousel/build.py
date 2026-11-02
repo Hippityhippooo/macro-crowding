@@ -29,10 +29,15 @@ CSS = """
 html,body{width:1080px;height:1350px;background:var(--cream);color:var(--ink);font-family:'Schibsted Grotesk',sans-serif;-webkit-font-smoothing:antialiased}
 .slide{position:relative;width:1080px;height:1350px;padding:96px;display:flex;flex-direction:column}
 .slide.cover{justify-content:flex-end}
-.slide.cover .bg{position:absolute;inset:0;background:url('file://%(figs)s/heatmap_bg.png') center/cover no-repeat;opacity:.9}
-.slide.cover .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(246,241,231,.05) 0%%,rgba(246,241,231,.94) 50%%,#f6f1e7 100%%)}
-.slide.cover > *:not(.bg):not(.veil):not(.name):not(.swipe){position:relative}
+.slide.cover .bg{position:absolute;inset:0;background:url('file://%(figs)s/cover_photo.png') center/cover no-repeat;opacity:1}
+.slide.cover .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(246,241,231,0) 0%%,rgba(246,241,231,.0) 30%%,rgba(246,241,231,.94) 46%%,#f6f1e7 100%%)}
+.slide.cover > *:not(.bg):not(.veil):not(.name):not(.swipe):not(.credit){position:relative}
 .slide.dark{background:#141311;color:#f6f1e7}
+.slide.photo .pbg{position:absolute;inset:0;background:url('file://%(figs)s/sec_bg.png') center/cover no-repeat;opacity:1}
+.slide.photo .pveil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(246,241,231,.0) 0%%,rgba(246,241,231,.0) 14%%,rgba(246,241,231,.97) 27%%,#f6f1e7 100%%)}
+.slide.photo > *:not(.pbg):not(.pveil):not(.credit){position:relative}
+.slide.photo .page{color:#f6f1e7;text-shadow:0 0 10px rgba(0,0,0,.6)}
+.slide.photo h2,.slide.photo .kicker,.slide.photo .page{text-shadow:0 0 18px rgba(246,241,231,.9)}
 .slide.dark .kicker,.slide.dark .page,.slide.dark .muted,.slide.dark .herolabel{color:#b9b2a3}
 .slide.dark h2{color:#f6f1e7}
 .slide.dark ol li::before{color:#7faae0}
@@ -82,7 +87,7 @@ def html_for(slide: dict, n: int, N: int) -> str:
     body = ""
     if t == "cover":
         chips = "".join(f'<span class="chip">{c}</span>' for c in slide.get("chips", []))
-        body = f'<div class="bg"></div><div class="veil"></div><div class="kicker">{slide.get("kicker","")}</div><h1>{slide["title"]}</h1><div class="lead"><i>{slide["sub"]}</i></div><div class="chips" style="margin-bottom:120px">{chips}</div><div class="name">{slide["name"]}</div><div class="swipe">swipe &#8594;</div>'
+        body = f'<div class="bg"></div><div class="veil"></div><div class="kicker">{slide.get("kicker","")}</div><h1 class="small">{slide["title"]}</h1><div class="lead"><i>{slide["sub"]}</i></div><div class="chips" style="margin-bottom:40px">{chips}</div><div class="name">{slide["name"]}</div><div class="swipe">swipe &#8594;</div><div class="credit" style="position:absolute;top:96px;right:96px;font-family:JetBrains Mono,monospace;font-size:22px;color:#f6f1e7;text-shadow:0 0 10px rgba(0,0,0,.6)">{slide.get("credit","")}</div>'
     elif t == "hero2":
         paras = "".join(f'<p class="body">{p}</p>' for p in slide.get("paras", []))
         body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><div class="hero-row"><div><div class="num accent">{slide["a"]}</div><div class="lab">{slide["a_label"]}</div></div><div><div class="num grey">{slide["b"]}</div><div class="lab">{slide["b_label"]}</div></div></div>{paras}'
@@ -92,10 +97,12 @@ def html_for(slide: dict, n: int, N: int) -> str:
         body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2>{hero}{paras}'
     elif t == "steps":
         items = "".join(f"<li>{s}</li>" for s in slide["steps"])
-        body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><ol>{items}</ol>'
+        pre = ('<div class="pbg"></div><div class="pveil"></div><div class="credit" style="position:absolute;top:96px;left:96px;font-family:JetBrains Mono,monospace;font-size:22px;color:#f6f1e7;text-shadow:0 0 10px rgba(0,0,0,.6)">' + slide.get("credit","") + '</div><div style="height:170px"></div>') if slide.get("photo") else ""
+        body = pre + f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><ol>{items}</ol>'
     elif t == "figure":
         paras = "".join(f'<p class="body">{p}</p>' for p in slide.get("paras", []))
-        body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><div class="fig"><img src="file://{HERE / "figs" / slide["img"]}"></div>{paras}'
+        pre = '<div class="pbg"></div><div class="pveil"></div>' if slide.get("photo") else ""
+        body = pre + f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><div class="fig"><img src="file://{HERE / "figs" / slide["img"]}"></div>{paras}'
     elif t == "table":
         head = "".join(f"<th>{h}</th>" for h in slide["head"])
         rows = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in slide["rows"])
@@ -106,7 +113,7 @@ def html_for(slide: dict, n: int, N: int) -> str:
         body = f'<div class="kicker">{slide.get("kicker","")}</div><h2>{slide["title"]}</h2><ul class="plain">{items}</ul>'
     foot = f'<div class="foot"><span>{slide.get("foot","")}</span></div>' if slide.get("foot") else ""
     page = f'<div class="page">{n} / {N}</div>' if t != "cover" else ""
-    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS % {'fonts': Path.home() / 'fonts', 'figs': HERE / 'figs'}}</style></head><body><div class='slide{" roomy" if t == "text" else ""}{" cover" if t == "cover" else ""}{" dark" if slide.get("dark") else ""}'>{page}{body}{foot}</div></body></html>"
+    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS % {'fonts': Path.home() / 'fonts', 'figs': HERE / 'figs'}}</style></head><body><div class='slide{" roomy" if t == "text" else ""}{" cover" if t == "cover" else ""}{" dark" if slide.get("dark") else ""}{" photo" if slide.get("photo") else ""}'>{page}{body}{foot}</div></body></html>"
 
 
 def main():
