@@ -63,7 +63,7 @@ h2{{font-family:Fraunces,serif;font-weight:600;font-size:58px;line-height:1.08;l
 .split .credit{{position:absolute;left:24px;bottom:24px;font-family:'JetBrains Mono',monospace;font-size:20px;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.7)}}
 /* statement */
 .statement{{padding:88px;display:flex;flex-direction:column}}
-.statement h1{{font-size:84px;margin-top:120px}}
+.statement h1{{font-size:74px;margin-top:110px}}
 .statement h1 em{{font-style:italic;font-weight:400;color:var(--accent)}}
 .statement .sub{{margin-top:56px;font-size:33px;max-width:860px}}
 .statement .foot{{position:absolute;left:88px;right:88px;bottom:72px;font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--muted)}}

@@ -1,124 +1,43 @@
 [
- {
-  "type": "photo_cover",
-  "tag": "Earnings season meets the Fed calendar",
-  "credit": "photo: Federal Reserve",
-  "title": "I checked 421,885 earnings releases. Fed day changes nothing.",
-  "sub": "Every US earnings 8-K since 2005, timed to the second, tested against the FOMC, CPI and jobs calendar.",
-  "meta_l": "Faldo Lyon · November 2026",
-  "meta_r": "pre-registered · holdout run once"
- },
- {
-  "type": "bignum",
-  "tag": "Earnings 8-Ks per trading day, 2005–2025",
-  "a": "126",
-  "a_l": "on FOMC statement days",
-  "b": "72",
-  "b_l": "on every other trading day",
-  "sub": "The Fed meets eight times a year, and every one of those meetings lands in earnings season. One release in seven trades for the first time in the same session as CPI, the jobs report or the Fed."
- },
- {
-  "type": "chart",
-  "tall": true,
-  "tag": "Announcements per day, 2005–2025 · orange dots are FOMC days",
-  "title": "Two bands of earnings a year. The Fed sits in the darker one.",
-  "sub": "",
-  "img": "heatmap.png"
- },
- {
-  "type": "chart",
-  "tag": "When the 8-K hits EDGAR",
-  "title": "EDGAR stamps every filing to the second. That's how I split the sessions.",
-  "sub": "A 06:46 filing on a CPI day competes with the 08:30 print. A 16:30 filing on Fed day competes with nothing.",
-  "img": "minutes.png"
- },
- {
-  "type": "split_photo",
-  "tag": "Method",
-  "credit": "photo: SEC, Washington",
-  "title": "What I actually did",
-  "steps": [
-   "Pulled every 8-K with Item 2.02 from EDGAR and took the time of day from the acceptance stamp.",
-   "Called a release crowded if it first traded in the same session as CPI, payrolls or the FOMC statement.",
-   "Measured the surprise two ways: first-filed GAAP EPS against last year, and the two-day market move.",
-   "Measured drift over 60 days against FF5 plus momentum, with firm and quarter fixed effects and errors clustered by firm and day.",
-   "Wrote the thresholds down first. Held out 2016–2025 and ran it once."
-  ]
- },
- {
-  "type": "chart",
-  "tag": "Finding 1",
-  "title": "Earnings released on crowded days drift the same as any other",
-  "sub": "Top minus bottom surprise decile after the two-day reaction. 26,531 extreme events, 2005–2025.",
-  "img": "drift_paths.png"
- },
- {
-  "type": "chart",
-  "tag": "Finding 1, the pre-registered test",
-  "title": "My first sample found less drift on Fed days. The holdout killed it.",
-  "sub": "Blue: the primary test in each sample. Grey: by release type. Nothing survives both periods.",
-  "img": "coef.png"
- },
- {
-  "type": "chart",
-  "tag": "Placebo",
-  "title": "I redrew the macro calendar at random 1,000 times. Same answer.",
-  "sub": "30% of random calendars produce a bigger coefficient than the real one did.",
-  "img": "placebo.png"
- },
- {
-  "type": "chart",
-  "navy": true,
-  "tag": "Positive control · exploratory, not pre-registered",
-  "title": "Illiquid stocks drift 3.6x more. Fed day still doesn't matter.",
-  "sub": "The textbook effect is there. Split by Corwin-Schultz spread, the crowded-session effect is flat in all three groups.",
-  "img": "positive_control.png"
- },
- {
-  "type": "chart",
-  "tag": "Finding 2",
-  "title": "Firms don't hide bad quarters behind the Fed",
-  "sub": "Same share of weak quarters on crowded and quiet sessions in both samples (t −0.01 and 1.2).",
-  "img": "h2.png"
- },
- {
-  "type": "chart",
-  "navy": true,
-  "tag": "What firms do shift · exploratory, not pre-registered",
-  "title": "Bad news doesn't move the date. It moves the filing.",
-  "sub": "Weak quarters are 1 pp more likely to file the 8-K late (t 5.8, n 177,209) and more likely to land Friday after the close.",
-  "img": "lag.png"
- },
- {
-  "type": "chart",
-  "tag": "Context · exploratory",
-  "title": "Drift was over 4 pp in 2007, almost 4 in 2024, and zero in 2020",
-  "sub": "60-day drift by year, top vs bottom decile, with 95% bands. My test runs inside this.",
-  "img": "pead_by_year.png"
- },
- {
-  "type": "chart",
-  "tag": "In dollars · exploratory",
-  "title": "I wouldn't trade either of these",
-  "sub": "Quiet-session book: 1.2 bp a day, t 1.9, 237 names. Crowded: 0.6 bp, t 0.4, 50 names. Both lose after spreads.",
-  "img": "equity.png"
- },
- {
-  "type": "list",
-  "tag": "What limits it",
-  "title": "Where I'd push back on myself",
-  "items": [
-   "Prices come from Yahoo Finance, so most delisted firms are missing. Their crowded share was 14.6% against 15.9% for survivors.",
-   "GAAP EPS against last year isn't the consensus number analysts actually trade.",
-   "The holdout standard error is 0.66 pp, so an effect under about 1.3 pp, top versus bottom decile, could still be there.",
-   "The slides marked exploratory weren't pre-registered. I dropped 737 tickers that moved more than 100% in a day."
-  ]
- },
- {
-  "type": "statement",
-  "tag": "Verdict",
-  "title": "I think the market reads earnings fine on <em>Fed day.</em>",
-  "sub": "The market prices an earnings release on a CPI, jobs or FOMC session about as fully as on a quiet one, and firms don't use those days to bury weak quarters. What they delay is the 8-K itself. What would change my mind: a consensus-based surprise, or prices for the delisted firms, showing a gap this data can't see.",
-  "foot": "Code, data build and pre-registration on GitHub · link in the first comment"
- }
+  {"type": "photo_cover", "tag": "Earnings season meets the Fed calendar", "credit": "photo: Federal Reserve",
+   "title": "Do earnings get read differently when the Fed is talking?",
+   "sub": "421,885 US earnings releases since 2005, timed to the second. Pre-registered, holdout run once. Short answer: I can't find it.",
+   "meta_l": "Faldo Lyon · November 2026", "meta_r": "code and data in the first comment"},
+  {"type": "bignum", "tag": "Q1 · How crowded is the calendar?", "a": "126", "a_l": "earnings 8-Ks on an FOMC statement day", "b": "72", "b_l": "on every other trading day",
+   "sub": "The Fed meets eight times a year, always inside reporting season. One release in seven first trades in the same session as CPI, the jobs report or the FOMC statement."},
+  {"type": "chart", "tall": true, "tag": "Q1 · How crowded is the calendar? · orange dots are FOMC days", "title": "Every quarter the FOMC lands in the thick of reporting season",
+   "sub": "", "img": "heatmap.png"},
+  {"type": "chart", "tag": "Method · timing", "title": "EDGAR stamps each filing to the second, so I know which session the news first traded in",
+   "sub": "A 06:46 filing on a CPI day competes with the 08:30 print. A 16:30 filing on Fed day competes with nothing until the next open.", "img": "minutes.png"},
+  {"type": "split_photo", "tag": "Method · design", "credit": "photo: SEC, Washington", "title": "How the test was built",
+   "steps": ["Every 8-K with Item 2.02 from EDGAR; time of day from the acceptance stamp.",
+             "Crowded: the news first trades in the same session as CPI, payrolls or the FOMC statement.",
+             "Surprise two ways: first-filed GAAP EPS against last year, and the two-day market move.",
+             "Drift over 60 days against FF5 plus momentum; firm and quarter fixed effects; errors clustered by firm and day.",
+             "Thresholds written down first. 2016–2025 held out and run once."]},
+  {"type": "chart", "tag": "Q2 · Does crowding change the drift? · baseline", "title": "Post-earnings drift is still alive: 1 to 4 pp a year, except 2020",
+   "sub": "60-day drift, top vs bottom surprise decile, with 95% bands. If nothing drifts, there's nothing for Fed day to change.", "img": "pead_by_year.png"},
+  {"type": "chart", "tag": "Q2 · Does crowding change the drift?", "title": "Crowded and quiet releases drift the same: 1.1 pp vs 1.5 pp over 60 days",
+   "sub": "Top minus bottom surprise decile after the two-day reaction. 26,531 extreme events, 2005–2025.", "img": "drift_paths.png"},
+  {"type": "chart", "tag": "Q2 · the pre-registered test", "title": "First sample: −1.5 pp, all on FOMC days. Holdout: +0.75 pp, nothing. It doesn't replicate.",
+   "sub": "Blue: the primary test in each sample. Grey: by release type. Extra 60-day drift, top vs bottom decile, on crowded sessions.", "img": "coef.png"},
+  {"type": "chart", "tag": "Q2 · placebo", "title": "1,000 random macro calendars: 30% produce a bigger coefficient than the real one",
+   "sub": "If the real calendar mattered, it should sit in the tail. It sits in the middle.", "img": "placebo.png"},
+  {"type": "chart", "navy": true, "tag": "Q2 · positive control · exploratory, not pre-registered", "title": "Illiquid names drift 3.6x more, so the drift is real. Crowding still adds nothing.",
+   "sub": "Split by Corwin-Schultz spread. The crowded-session effect is flat in all three groups.", "img": "positive_control.png"},
+  {"type": "chart", "tag": "Q3 · Do firms time bad news to the Fed?", "title": "No. Weak quarters land on crowded sessions at the same rate as good ones.",
+   "sub": "Share with EPS below last year, both samples. Regression t-stats −0.01 and 1.2.", "img": "h2.png"},
+  {"type": "chart", "navy": true, "tag": "Q3 · exploratory, not pre-registered", "title": "What weak quarters do shift is the filing: more late 8-Ks, more Friday nights",
+   "sub": "1 pp more likely to file after the release day, within firm, t 5.8 on 177,209 announcements. Friday after close 1.7% vs 1.4%.", "img": "lag.png"},
+  {"type": "chart", "tag": "Q4 · Can you trade it? · exploratory", "title": "No. Neither book covers its spread costs.",
+   "sub": "Quiet-session events: 1.2 bp a day, t 1.9, 237 names. Crowded: 0.6 bp, t 0.4, 50 names. Net of Corwin-Schultz costs both lose.", "img": "equity.png"},
+  {"type": "list", "tag": "Limits", "title": "What I'd challenge if this were someone else's work",
+   "items": ["Prices come from Yahoo Finance, so most delisted firms are missing. Their crowded share was 14.6% against 15.9% for survivors.",
+             "GAAP EPS against last year isn't the consensus number analysts actually trade.",
+             "The holdout standard error is 0.66 pp: an effect under about 1.3 pp, top versus bottom decile, could still be there.",
+             "Slides marked exploratory weren't pre-registered. 737 tickers that moved more than 100% in a day were dropped whole."]},
+  {"type": "statement", "tag": "Verdict",
+   "title": "My read: the market prices earnings about as fully on <em>Fed day</em> as on any other.",
+   "sub": "Firms don't use crowded sessions to bury weak quarters; what they delay is the 8-K itself. What would change my mind: a consensus-based surprise, or prices for the delisted firms, showing a gap this data can't see.",
+   "foot": "Code, data build and pre-registration on GitHub · link in the first comment"}
 ]

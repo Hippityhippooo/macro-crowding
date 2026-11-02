@@ -2,7 +2,7 @@
 
 Clearance: personal research on public data, posted from a personal account. Courtesy heads-up to Justin before posting (Faldo is identifiable as a Gotrade employee and the subject is US equities); not a sign-off requirement. No named security with a view, so no [[DISCLAIMER]] slot placed; E16 (POJK on non-licensed parties sharing financial information) is a judgement for Justin.
 
-Package: A, document carousel (E1, E19), 15 slides, v2 layouts (carousel/out2). Copy run through linkedin-voice v0.1 on 2 Nov 2026: titles rewritten first-person, aphorism titles removed, caption 627 chars with an "I think" line and a question he wants answered.
+Package: A, document carousel (E1, E19), 15 slides, v2 layouts (carousel/out2). Heading concept: four questions (Q1 crowding, Q2 drift, Q3 timing, Q4 tradeable) as kickers, every title a finding with its number. Copy through linkedin-voice v0.1.
 Document title (53 chars): Does the market read earnings differently on Fed day?
 Caption: carousel/caption.txt (599 chars, first block 116). First comment: carousel/first_comment.txt (970 chars) with [REPO URL] and [HASH] to fill after the push.
 
