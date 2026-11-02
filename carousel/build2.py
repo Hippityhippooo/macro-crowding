@@ -49,10 +49,10 @@ h2{{font-family:Fraunces,serif;font-weight:600;font-size:58px;line-height:1.08;l
 .bignum .l{{font-size:34px;color:#aab4c3;margin-top:22px;max-width:380px;line-height:1.3}}
 .bignum .sub{{margin-top:110px;font-size:36px;max-width:860px}}
 /* chart */
-.chart .head{{padding:72px 88px 0;height:{H - 860}px}}
-.chart .img{{position:absolute;left:60px;right:60px;bottom:40px;height:800px}}
+.chart .head{{padding:72px 88px 0}}
+.chart .img{{margin:28px 60px 0;height:800px}}
 .chart .img img{{width:960px;height:800px;display:block}}
-.chart.tall .head{{height:{H - 980}px;padding-top:64px}} .chart.tall h2{{font-size:52px;margin-top:10px}} .chart.tall .img{{height:933px;bottom:40px}} .chart.tall .img img{{height:933px}}
+.chart.tall h2{{font-size:52px;margin-top:10px}} .chart.tall .img{{height:933px}} .chart.tall .img img{{height:933px}}
 /* split photo */
 .split .photo{{position:absolute;left:0;top:0;bottom:0;width:470px;background:url('file://{PHOTOS}/sec_cover.png') center/cover no-repeat}}
 .split .panel{{position:absolute;left:470px;top:0;bottom:0;right:0;background:var(--ink);color:var(--cream);padding:80px 72px 72px 64px}}
@@ -110,9 +110,9 @@ def main():
         for i, sl in enumerate(slides, 1):
             f = OUT / f"slide_{i:02d}.html"; f.write_text(render(sl, i, N)); pg.goto(f"file://{f}"); pg.wait_for_timeout(200)
             words = pg.evaluate("() => document.body.innerText.split(/\\s+/).filter(Boolean).length")
-            ov = pg.evaluate("() => { const h=document.querySelector('.head'); return h ? h.scrollHeight > h.clientHeight : false }")
+            ov = pg.evaluate("() => document.documentElement.scrollHeight > 1350 || (document.querySelector('.img') ? document.querySelector('.img').getBoundingClientRect().bottom > 1350 : false)")
             png = OUT / f"slide_{i:02d}.png"; pg.screenshot(path=str(png)); pngs.append(png)
-            print(f"slide {i:02d} {sl['type']:12s} words={words}{' HEAD OVERFLOW' if ov else ''}")
+            print(f"slide {i:02d} {sl['type']:12s} words={words}{' OVERFLOW' if ov else ''}")
         b.close()
     from PIL import Image
     ims = [Image.open(x).convert("RGB") for x in pngs]

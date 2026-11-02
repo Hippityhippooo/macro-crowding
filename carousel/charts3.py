@@ -46,13 +46,13 @@ def heatmap(theme="cream"):
     H = pd.read_csv(ROOT / "output/exhibit_heatmap.csv", index_col=0); H.columns = H.columns.astype(int)
     F = pd.read_csv(ROOT / "output/exhibit_heatmap_fomc.csv")
     fig, T = _fig(theme, h=1050)
-    ax = fig.add_axes([0.13, 0.12, 0.84, 0.85])
+    ax = fig.add_axes([0.14, 0.15, 0.80, 0.81])
     cmap = LinearSegmentedColormap.from_list("seq", [T["bg"], "#c9d8ee", "#7faae0", "#2a78d6", "#143c6e"])
     ax.imshow(H.values, aspect="auto", cmap=cmap, vmin=0, vmax=np.nanpercentile(H.values, 98), interpolation="nearest")
     ax.scatter(F["doq"] - 1, [H.index.get_loc(y) for y in F["year"]], s=26, color=T["contrast"], linewidths=0)
-    ax.set_yticks(range(0, len(H.index), 5)); ax.set_yticklabels(H.index[::5], fontfamily=MONO)
-    ax.set_xticks([0, 20, 40, 60]); ax.set_xticklabels(["day 1", "day 21", "day 41", "day 61"], fontfamily=MONO)
-    ax.set_xlabel("trading day within the calendar quarter")
+    ax.set_yticks(range(0, len(H.index) - 1, 5)); ax.set_yticklabels(H.index[:-1:5], fontfamily=MONO)
+    ax.set_xticks([0, 20, 40, 60]); ax.set_xticklabels(["1", "21", "41", "61"], fontfamily=MONO); ax.tick_params(axis="x", pad=14)
+    ax.set_xlabel("trading day of the quarter")
     for s in ax.spines.values(): s.set_visible(False)
     _save(fig, "heatmap")
 
@@ -61,7 +61,7 @@ def minutes(theme="cream"):
     h = pd.read_csv(ROOT / "output/exhibit_minute_hist.csv", index_col=0)["n"]
     full = pd.Series(0.0, index=range(1440)); full.loc[h.index] = h.values; full = full / full.sum() * 100
     fig, T = _fig(theme, h=900)
-    ax = fig.add_axes([0.11, 0.17, 0.86, 0.75])
+    ax = fig.add_axes([0.12, 0.18, 0.82, 0.76])
     x = np.arange(1440) / 60
     ax.fill_between(x, 0, full.values, color=T["accent"], step="mid", lw=0)
     for m, lab in ((8.5, "08:30 CPI, jobs"), (14.0, "14:00 FOMC")):
@@ -70,10 +70,10 @@ def minutes(theme="cream"):
     for m, lab in ((9.5, "open"), (16.0, "close")):
         ax.axvline(m, color=T["ink"], lw=1.5, ls=(0, (2, 3)))
         ax.text(m + 0.12, 2.35, lab, rotation=90, va="top", fontsize=28, color=T["muted"], fontfamily=MONO)
-    ax.text(20.6, 1.0, "20% of releases\nland in the 15 min\nafter the close", fontsize=30, ha="right", va="top", color=T["ink"])
+    ax.annotate("20% of releases land in\nthe 15 min after the close", xy=(16.1, 1.1), xytext=(9.9, 0.72), fontsize=30, ha="left", va="center", color=T["ink"], arrowprops=dict(arrowstyle="-", color=T["muted"], lw=1.5, shrinkB=6))
     ax.set_xlim(5.5, 21); ax.set_ylim(0, 2.5)
     ax.set_xticks([6, 9, 12, 15, 18]); ax.set_xticklabels([f"{t:02d}:00" for t in [6, 9, 12, 15, 18]], fontfamily=MONO)
-    ax.set_yticks([0, 1, 2]); ax.set_yticklabels(["0", "1%", "2%"], fontfamily=MONO)
+    ax.set_yticks([1, 2]); ax.set_yticklabels(["1%", "2%"], fontfamily=MONO)
     ax.set_xlabel("time the 8-K hit EDGAR, Eastern"); ax.yaxis.grid(True, color=T["line"], lw=1.5); ax.set_axisbelow(True)
     _save(fig, "minutes")
 
@@ -81,7 +81,7 @@ def minutes(theme="cream"):
 def drift_paths(theme="cream"):
     p = pd.read_csv(ROOT / "output/exhibit_car_paths.csv", index_col=0); d = p.loc[1:]; d = d - d.iloc[0]
     fig, T = _fig(theme, h=900)
-    ax = fig.add_axes([0.15, 0.17, 0.72, 0.78])
+    ax = fig.add_axes([0.14, 0.18, 0.70, 0.76])
     ax.axhline(0, color=T["line"], lw=2)
     ax.plot(d.index, d["uncrowded"], color=T["grey"], lw=5)
     ax.plot(d.index, d["crowded"], color=T["accent"], lw=5)
@@ -96,7 +96,7 @@ def drift_paths(theme="cream"):
 
 def forest(rows, name, theme="cream", xlim=(-5.8, 5.8), h=900, highlight=lambda i: i < 2):
     fig, T = _fig(theme, h=h)
-    ax = fig.add_axes([0.42, 0.17, 0.55, 0.79])
+    ax = fig.add_axes([0.42, 0.18, 0.52, 0.76])
     y = np.arange(len(rows))[::-1]
     for i, (yi, (lab, b, se)) in enumerate(zip(y, rows)):
         col = T["accent"] if highlight(i) else T["grey"]
@@ -116,7 +116,7 @@ def forest(rows, name, theme="cream", xlim=(-5.8, 5.8), h=900, highlight=lambda 
 def placebo(theme="cream"):
     draws = np.load(ROOT / "output/placebo_draws_holdout.npy") * 100
     fig, T = _fig(theme, h=900)
-    ax = fig.add_axes([0.08, 0.17, 0.89, 0.78])
+    ax = fig.add_axes([0.08, 0.18, 0.86, 0.76])
     ax.hist(draws, bins=36, color=T["grey"], edgecolor=T["bg"], lw=1.5)
     ax.axvline(0.748, color=T["contrast"], lw=5)
     ax.text(0.85, ax.get_ylim()[1] * 0.93, "holdout\nestimate\n+0.75 pp", color=T["contrast"], fontsize=32, fontfamily=MONO, va="top")
@@ -147,7 +147,7 @@ def positive_control(theme="navy"):
 
 def bars2(rows, name, theme, ylim, ylabel, legend):
     fig, T = _fig(theme, h=900)
-    ax = fig.add_axes([0.12, 0.17, 0.85, 0.75])
+    ax = fig.add_axes([0.12, 0.18, 0.82, 0.74])
     x = np.arange(len(rows)); w = 0.36
     for j, (col, lab) in enumerate(legend):
         bars = ax.bar(x + (j - 0.5) * (w + 0.02), [r[1 + j] for r in rows], w, color=col, label=lab)
@@ -162,7 +162,7 @@ def bars2(rows, name, theme, ylim, ylabel, legend):
 def pead_by_year(theme="cream"):
     d = pd.read_csv(ROOT / "output/exhibit_pead_by_year.csv")
     fig, T = _fig(theme, h=900)
-    ax = fig.add_axes([0.15, 0.17, 0.82, 0.78])
+    ax = fig.add_axes([0.15, 0.18, 0.79, 0.76])
     ax.fill_between(d.year, d.drift_pp - 1.96 * d.se_pp, d.drift_pp + 1.96 * d.se_pp, color="#c9d8ee" if theme == "cream" else "#2a3a52", lw=0, alpha=0.8)
     ax.plot(d.year, d.drift_pp, color=T["accent"], lw=5, marker="o", ms=11, markeredgecolor=T["bg"])
     ax.axhline(0, color=T["ink"], lw=2)
@@ -179,7 +179,7 @@ def equity(theme="cream"):
     d = pd.read_csv(ROOT / "output/exhibit_portfolio_daily.csv", index_col=0, parse_dates=True).dropna(how="all").fillna(0).loc["2005-04-01":"2025-12-31"]
     cum = (1 + d).cumprod() * 100
     fig, T = _fig(theme, h=900)
-    ax = fig.add_axes([0.12, 0.17, 0.74, 0.78])
+    ax = fig.add_axes([0.12, 0.18, 0.72, 0.76])
     ax.plot(cum.index, cum["uncrowded"], color=T["grey"], lw=4)
     ax.plot(cum.index, cum["crowded"], color=T["accent"], lw=4)
     ax.text(cum.index[-1] + pd.Timedelta(days=90), cum["uncrowded"].iloc[-1], "quiet\n188", color=T["grey"], fontsize=32, fontfamily=MONO, va="center")
@@ -194,7 +194,7 @@ def equity(theme="cream"):
 
 if __name__ == "__main__":
     heatmap(); minutes(); drift_paths(); placebo(); positive_control("navy"); pead_by_year(); equity()
-    forest([("development\n2005–15", -0.01482, 0.00714), ("holdout\n2016–25", 0.00748, 0.00662), ("FOMC only, dev", -0.03838, 0.00901),
+    forest([("development 2005–15", -0.01482, 0.00714), ("holdout 2016–25", 0.00748, 0.00662), ("FOMC only, dev", -0.03838, 0.00901),
             ("FOMC only, holdout", 0.00059, 0.00925), ("CPI only, holdout", 0.00795, 0.01457), ("jobs only, holdout", 0.00919, 0.00902)], "coef")
     bars2([("2010–15\ndevelopment", 42.7, 42.4), ("2016–25\nholdout", 44.8, 43.6)], "h2", "cream", (0, 58), "EPS below last year, share",
           ((THEMES["cream"]["accent"], "crowded session"), (THEMES["cream"]["grey"], "quiet session")))
